@@ -1,0 +1,8 @@
+node_modules
+dist
+.env
+.env.local
+*.log
+dev-port.txt
+dev-server.log
+dev-server.err.log
