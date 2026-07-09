@@ -81,7 +81,11 @@ export function Contacts() {
               icon={AtSign}
               label="Instagram"
               value={contacts.instagram}
-              href={contacts.instagram ? createInstagramHref(contacts.instagram) : undefined}
+              href={
+                contacts.instagram
+                  ? contacts.instagramUrl ?? createInstagramHref(contacts.instagram)
+                  : undefined
+              }
             />
             <ContactCard
               icon={MapPin}

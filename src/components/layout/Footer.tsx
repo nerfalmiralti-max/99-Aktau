@@ -32,7 +32,11 @@ export function Footer() {
             </a>
           ) : null}
           {contacts.instagram ? (
-            <a href={createInstagramHref(contacts.instagram)} target="_blank" rel="noreferrer">
+            <a
+              href={contacts.instagramUrl ?? createInstagramHref(contacts.instagram)}
+              target="_blank"
+              rel="noreferrer"
+            >
               Instagram
             </a>
           ) : null}

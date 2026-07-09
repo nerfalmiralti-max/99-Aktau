@@ -51,8 +51,8 @@ export function Gallery() {
       <div className="container">
         <SectionHeader
           eyebrow="Галерея"
-          title="Крупные кадры пространства без визуального шума."
-          text="Галерея использует только подготовленные изображения проекта и открывает каждый кадр в аккуратном полноэкранном просмотре."
+          title="Места для будущих фотографий пространства."
+          text="Фотографии не используются: каждый блок подготовлен для замены реальными кадрами клуба позже."
         />
 
         <div className="gallery-grid">
@@ -60,22 +60,17 @@ export function Gallery() {
             <motion.button
               className={`gallery-item gallery-item-${index + 1}`}
               type="button"
-              key={image.src}
+              key={`${image.title}-${index}`}
               onClick={() => setActiveIndex(index)}
               whileHover={{ y: -8, scale: 1.015 }}
               whileTap={{ scale: 0.99 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
               aria-label={`Открыть изображение: ${image.title}`}
             >
-              <img
-                src={image.src}
-                alt={image.alt}
-                width={image.width}
-                height={image.height}
-                loading={index === 0 ? "eager" : "lazy"}
-                decoding="async"
-              />
-              <span>{image.title}</span>
+              <span className="media-placeholder gallery-placeholder" aria-hidden>
+                <span>Фото будет добавлено</span>
+              </span>
+              <span className="gallery-item-label">{image.title}</span>
             </motion.button>
           ))}
         </div>
@@ -105,13 +100,9 @@ export function Gallery() {
               exit={{ opacity: 0, y: 24, scale: 0.96 }}
               transition={{ duration: 0.28, ease: "easeOut" }}
             >
-              <img
-                src={activeImage.src}
-                alt={activeImage.alt}
-                width={activeImage.width}
-                height={activeImage.height}
-                decoding="async"
-              />
+              <div className="media-placeholder lightbox-placeholder" aria-hidden>
+                <span>Фото будет добавлено</span>
+              </div>
               <div className="lightbox-caption">
                 <span>{activeImage.title}</span>
                 <button type="button" onClick={() => setActiveIndex(null)} aria-label="Закрыть">

@@ -7,15 +7,7 @@ import { ButtonLink } from "../ui/Button";
 export function Hero() {
   return (
     <section className="hero-section" id="home" aria-label="Главный экран">
-      <img
-        className="hero-image"
-        src={siteConfig.media.hero}
-        alt="Премиальная игровая lounge-зона 99 AKTAU"
-        width={1983}
-        height={793}
-        decoding="async"
-        fetchPriority="high"
-      />
+      <div className="hero-image media-placeholder hero-media-placeholder" aria-hidden />
       <div className="hero-overlay" />
       <div className="container hero-content">
         <div className="hero-copy">

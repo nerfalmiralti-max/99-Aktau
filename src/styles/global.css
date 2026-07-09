@@ -461,8 +461,26 @@ img {
 .hero-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   transform: scale(1.02);
+}
+
+.media-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(135deg, rgba(201, 108, 255, 0.1), transparent 44%),
+    linear-gradient(315deg, rgba(70, 216, 255, 0.09), transparent 42%),
+    rgba(255, 255, 255, 0.035);
+  color: rgba(247, 244, 255, 0.54);
+  font-size: 0.92rem;
+  font-weight: 760;
+}
+
+.hero-media-placeholder {
+  position: absolute;
+  inset: 0;
 }
 
 .hero-overlay {
@@ -714,10 +732,9 @@ img {
   background: linear-gradient(180deg, transparent 40%, rgba(7, 7, 10, 0.42));
 }
 
-.zones-visual img {
+.zones-placeholder {
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
 
 .zone-cards {
@@ -771,10 +788,9 @@ img {
   grid-column: span 2;
 }
 
-.gallery-item img {
+.gallery-placeholder {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   transition: transform 540ms ease;
 }
 
@@ -785,7 +801,7 @@ img {
   background: linear-gradient(180deg, transparent 44%, rgba(0, 0, 0, 0.78) 100%);
 }
 
-.gallery-item span {
+.gallery-item-label {
   position: absolute;
   z-index: 1;
   right: 18px;
@@ -796,7 +812,7 @@ img {
   text-align: left;
 }
 
-.gallery-item:hover img {
+.gallery-item:hover .gallery-placeholder {
   transform: scale(1.045);
 }
 
@@ -827,11 +843,13 @@ img {
   box-shadow: var(--shadow);
 }
 
-.lightbox-panel img {
+.lightbox-placeholder {
   width: 100%;
-  max-height: min(78vh, 760px);
-  object-fit: contain;
-  background: #050507;
+  min-height: min(64vh, 620px);
+  background:
+    linear-gradient(135deg, rgba(201, 108, 255, 0.08), transparent 42%),
+    linear-gradient(315deg, rgba(70, 216, 255, 0.08), transparent 40%),
+    #050507;
 }
 
 .lightbox-caption {

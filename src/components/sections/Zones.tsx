@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { siteConfig } from "../../config/site.config";
 import { zoneCards } from "../../data/content";
 import { ButtonLink } from "../ui/Button";
 import { Reveal } from "../ui/Reveal";
@@ -11,21 +10,16 @@ export function Zones() {
     <section className="section zones-section" id="zones">
       <div className="container">
         <SectionHeader
-          eyebrow="Игровые зоны"
-          title="Зоны для вечера в своем ритме."
-          text="Блок не использует выдуманные тарифы или вместимость: владелец сможет добавить реальные параметры без переделки дизайна."
+          eyebrow="Цены"
+          title="Тарифы залов."
+          text="Два формата бронирования без дополнительных тарифов."
         />
 
         <div className="zones-layout">
           <Reveal className="zones-visual">
-            <img
-              src={siteConfig.media.zone}
-              alt="Private-зона 99 AKTAU"
-              width={1672}
-              height={941}
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="media-placeholder zones-placeholder" aria-hidden>
+              <span>Фото будет добавлено</span>
+            </div>
           </Reveal>
 
           <div className="zone-cards">
