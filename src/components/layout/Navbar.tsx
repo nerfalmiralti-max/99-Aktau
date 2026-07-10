@@ -1,12 +1,59 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarCheck, Menu, X } from "lucide-react";
+import { CalendarCheck, Loader2, LogOut, Menu, ShieldCheck, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { BrandLogo } from "../brand/BrandLogo";
 import { siteConfig } from "../../config/site.config";
 import { useScrollSpy } from "../../hooks/useScrollSpy";
 import { ButtonLink } from "../ui/Button";
 
-export function Navbar() {
+type AdminState = "loading" | "guest" | "admin";
+
+type NavbarProps = {
+  adminState: AdminState;
+  onAdminLogin: () => void;
+  onAdminLogout: () => void;
+};
+
+type AdminNavigationControlProps = NavbarProps & {
+  isMobile?: boolean;
+};
+
+function AdminNavigationControl({
+  adminState,
+  isMobile = false,
+  onAdminLogin,
+  onAdminLogout,
+}: AdminNavigationControlProps) {
+  const className = isMobile ? "admin-nav-control is-mobile" : "admin-nav-control";
+
+  if (adminState === "loading") {
+    return (
+      <button className={`${className} admin-nav-entry`} disabled type="button">
+        <Loader2 className="spin" aria-hidden size={15} />
+        <span>Проверяем вход</span>
+      </button>
+    );
+  }
+  if (adminState === "guest") {
+    return (
+      <button className={`${className} admin-nav-entry`} onClick={onAdminLogin} type="button">
+        <ShieldCheck aria-hidden size={15} />
+        <span>Вход для администратора</span>
+      </button>
+    );
+  }
+  return (
+    <div className={`${className} admin-nav-state`}>
+      <span><ShieldCheck aria-hidden size={15} />Режим администратора</span>
+      <button onClick={onAdminLogout} type="button">
+        <LogOut aria-hidden size={15} />
+        <span>Выйти</span>
+      </button>
+    </div>
+  );
+}
+
+export function Navbar({ adminState, onAdminLogin, onAdminLogout }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const sectionIds = useMemo(
@@ -30,6 +77,14 @@ export function Navbar() {
   }, [isMenuOpen]);
 
   const closeMenu = () => setIsMenuOpen(false);
+  const openAdminLogin = () => {
+    closeMenu();
+    onAdminLogin();
+  };
+  const logoutAdmin = () => {
+    closeMenu();
+    onAdminLogout();
+  };
 
   return (
     <motion.header
@@ -52,6 +107,11 @@ export function Navbar() {
             {item.label}
           </a>
         ))}
+        <AdminNavigationControl
+          adminState={adminState}
+          onAdminLogin={openAdminLogin}
+          onAdminLogout={logoutAdmin}
+        />
       </nav>
 
       <ButtonLink
@@ -96,6 +156,12 @@ export function Navbar() {
                 {item.label}
               </a>
             ))}
+            <AdminNavigationControl
+              adminState={adminState}
+              isMobile
+              onAdminLogin={openAdminLogin}
+              onAdminLogout={logoutAdmin}
+            />
             <ButtonLink
               className="mobile-nav-cta"
               href="#booking"

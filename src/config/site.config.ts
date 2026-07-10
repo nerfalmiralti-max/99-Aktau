@@ -19,7 +19,7 @@ export const siteConfig = {
     { label: "Контакты", href: "#contacts", sectionId: "contacts" },
   ] satisfies NavigationItem[],
   contacts: {
-    phone: null as string | null,
+    phone: "+7 701 081 54 95",
     whatsapp: "+7 701 081 54 95",
     instagram: "@99.aktau",
     instagramUrl: "https://www.instagram.com/99.aktau?igsh=ZGV2eDZseWl4ZGNt",

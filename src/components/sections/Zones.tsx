@@ -12,7 +12,7 @@ export function Zones() {
         <SectionHeader
           eyebrow="Цены"
           title="Тарифы залов."
-          text="Два формата бронирования без дополнительных тарифов."
+          text="Действует ежедневно до 00:00 по времени Актау."
         />
 
         <div className="zones-layout">

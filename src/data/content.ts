@@ -21,12 +21,12 @@ export const aboutCards = [
 export const zoneCards = [
   {
     title: "Основной зал",
-    text: "1000 ₸ / час",
+    text: "1000 ₸ / час · 2+1 часа — 2000 ₸",
     icon: Armchair,
   },
   {
     title: "VIP-зал",
-    text: "1500 ₸ / час",
+    text: "1500 ₸ / час · 2+1 часа — 3500 ₸",
     icon: DoorOpen,
   },
 ];
