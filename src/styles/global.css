@@ -49,7 +49,8 @@ body.has-open-menu {
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -386,9 +387,7 @@ img {
 }
 
 .nav-menu-button:hover,
-.hero-scroll:hover,
-.lightbox-caption button:hover,
-.lightbox-arrow:hover {
+.hero-scroll:hover {
   border-color: rgba(70, 216, 255, 0.36);
   background: rgba(255, 255, 255, 0.12);
   transform: translateY(-2px);
@@ -649,7 +648,6 @@ img {
 
 .feature-card,
 .zone-card,
-.gallery-item,
 .booking-form,
 .booking-panel,
 .contact-card,
@@ -758,145 +756,6 @@ img {
   margin-top: 18px;
 }
 
-.gallery-section {
-  background:
-    linear-gradient(180deg, #08080b 0%, #111015 100%),
-    linear-gradient(90deg, rgba(216, 177, 107, 0.04), transparent 48%);
-}
-
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 300px;
-  gap: 14px;
-}
-
-.gallery-item {
-  position: relative;
-  display: block;
-  min-height: 260px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-card);
-  background: var(--surface-muted);
-  cursor: pointer;
-  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.26);
-}
-
-.gallery-item-1,
-.gallery-item-4 {
-  grid-column: span 2;
-}
-
-.gallery-placeholder {
-  width: 100%;
-  height: 100%;
-  transition: transform 540ms ease;
-}
-
-.gallery-item::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background: linear-gradient(180deg, transparent 44%, rgba(0, 0, 0, 0.78) 100%);
-}
-
-.gallery-item-label {
-  position: absolute;
-  z-index: 1;
-  right: 18px;
-  bottom: 16px;
-  left: 18px;
-  color: var(--text);
-  font-weight: 780;
-  text-align: left;
-}
-
-.gallery-item:hover .gallery-placeholder {
-  transform: scale(1.045);
-}
-
-.lightbox {
-  position: fixed;
-  z-index: 90;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-}
-
-.lightbox-backdrop {
-  position: absolute;
-  inset: 0;
-  border: 0;
-  background: rgba(0, 0, 0, 0.8);
-  cursor: zoom-out;
-}
-
-.lightbox-panel {
-  position: relative;
-  width: min(1120px, 100%);
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: var(--radius-card);
-  background: #050507;
-  box-shadow: var(--shadow);
-}
-
-.lightbox-placeholder {
-  width: 100%;
-  min-height: min(64vh, 620px);
-  background:
-    linear-gradient(135deg, rgba(201, 108, 255, 0.08), transparent 42%),
-    linear-gradient(315deg, rgba(70, 216, 255, 0.08), transparent 40%),
-    #050507;
-}
-
-.lightbox-caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  min-height: 60px;
-  padding: 10px 12px 10px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.lightbox-caption button,
-.lightbox-arrow {
-  display: grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    transform 180ms var(--ease-premium);
-}
-
-.lightbox-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  backdrop-filter: blur(14px);
-}
-
-.lightbox-arrow:hover {
-  transform: translateY(calc(-50% - 2px));
-}
-
-.lightbox-arrow-left {
-  left: 14px;
-}
-
-.lightbox-arrow-right {
-  right: 14px;
-}
-
 .booking-section {
   background:
     linear-gradient(180deg, #111015 0%, #07070a 100%),
@@ -934,7 +793,8 @@ label span {
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius-control);
@@ -947,7 +807,8 @@ textarea {
     background 170ms ease;
 }
 
-input {
+input,
+select {
   height: 56px;
   padding: 0 16px;
 }
@@ -964,7 +825,8 @@ textarea::placeholder {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   border-color: rgba(70, 216, 255, 0.72);
   background: rgba(255, 255, 255, 0.085);
   box-shadow: 0 0 0 4px rgba(70, 216, 255, 0.12);
@@ -1257,11 +1119,6 @@ a.contact-card:hover {
     min-height: 460px;
   }
 
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 270px;
-  }
-
   .footer-nav,
   .footer-contacts {
     justify-content: flex-start;
@@ -1394,35 +1251,6 @@ a.contact-card:hover {
     grid-template-columns: 1fr;
     gap: 18px;
     padding: 23px;
-  }
-
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 285px;
-  }
-
-  .gallery-item-1,
-  .gallery-item-4 {
-    grid-column: auto;
-  }
-
-  .lightbox {
-    padding: 14px;
-  }
-
-  .lightbox-caption {
-    min-height: 56px;
-    padding-left: 14px;
-  }
-
-  .lightbox-arrow {
-    top: auto;
-    bottom: 72px;
-    transform: none;
-  }
-
-  .lightbox-arrow:hover {
-    transform: translateY(-2px);
   }
 
   .booking-form,

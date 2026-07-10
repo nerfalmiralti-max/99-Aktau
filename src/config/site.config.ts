@@ -15,7 +15,6 @@ export const siteConfig = {
     { label: "Главная", href: "#home", sectionId: "home" },
     { label: "О клубе", href: "#about", sectionId: "about" },
     { label: "Игровые зоны", href: "#zones", sectionId: "zones" },
-    { label: "Галерея", href: "#gallery", sectionId: "gallery" },
     { label: "Бронирование", href: "#booking", sectionId: "booking" },
     { label: "Контакты", href: "#contacts", sectionId: "contacts" },
   ] satisfies NavigationItem[],

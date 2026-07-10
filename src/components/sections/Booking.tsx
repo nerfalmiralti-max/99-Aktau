@@ -5,7 +5,12 @@ import {
   bookingRepository,
   bookingRepositoryMode,
 } from "../../services/booking/bookingRepository";
-import type { BookingInput, BookingRequest } from "../../services/booking/types";
+import {
+  BOOKING_RETENTION_MS,
+  BookingLimitError,
+  isBookingRoom,
+} from "../../services/booking/bookingRules";
+import { BOOKING_ROOMS, type BookingInput, type BookingRequest } from "../../services/booking/types";
 import { formatBookingDate, getLocalToday } from "../../utils/dateUtils";
 import { Reveal } from "../ui/Reveal";
 import { SectionHeader } from "../ui/SectionHeader";
@@ -18,6 +23,7 @@ const initialForm: BookingInput = {
   phone: "",
   date: "",
   time: "",
+  room: BOOKING_ROOMS[0],
   comment: "",
 };
 
@@ -36,6 +42,22 @@ export function Booking() {
   useEffect(() => {
     bookingRepository.list().then(setBookings).catch(() => setBookings([]));
   }, []);
+
+  useEffect(() => {
+    if (!bookings.length) {
+      return undefined;
+    }
+
+    const nextExpiration = Math.min(
+      ...bookings.map((booking) => Date.parse(booking.createdAt) + BOOKING_RETENTION_MS),
+    );
+    const delay = Math.max(0, nextExpiration - Date.now()) + 50;
+    const timer = window.setTimeout(() => {
+      bookingRepository.list().then(setBookings).catch(() => setBookings([]));
+    }, delay);
+
+    return () => window.clearTimeout(timer);
+  }, [bookings]);
 
   const validate = (candidate: BookingInput) => {
     const nextErrors: BookingErrors = {};
@@ -63,7 +85,10 @@ export function Booking() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const updateField = (field: keyof BookingInput, value: string) => {
+  const updateField = <Field extends keyof BookingInput,>(
+    field: Field,
+    value: BookingInput[Field],
+  ) => {
     setForm((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: undefined }));
     setMessage("");
@@ -72,11 +97,13 @@ export function Booking() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const room = String(formData.get("room") ?? "");
     const candidate: BookingInput = {
       name: String(formData.get("name") ?? ""),
       phone: String(formData.get("phone") ?? ""),
       date: String(formData.get("date") ?? ""),
       time: String(formData.get("time") ?? ""),
+      room: isBookingRoom(room) ? room : BOOKING_ROOMS[0],
       comment: String(formData.get("comment") ?? ""),
     };
     setForm(candidate);
@@ -95,6 +122,7 @@ export function Booking() {
         phone: candidate.phone.trim(),
         date: candidate.date,
         time: candidate.time,
+        room: candidate.room,
         comment: candidate.comment.trim(),
       });
       const updatedBookings = await bookingRepository.list();
@@ -106,9 +134,13 @@ export function Booking() {
           ? `Заявка ${booking.id.slice(0, 8)} отправлена.`
           : `Заявка ${booking.id.slice(0, 8)} временно сохранена в этом браузере.`,
       );
-    } catch {
+    } catch (error) {
       setSubmitState("error");
-      setMessage("Не удалось сохранить заявку. Проверьте данные и попробуйте еще раз.");
+      setMessage(
+        error instanceof BookingLimitError
+          ? error.message
+          : "Не удалось сохранить заявку. Проверьте данные и попробуйте еще раз.",
+      );
     }
   };
 
@@ -194,6 +226,25 @@ export function Booking() {
               </div>
 
               <label>
+                <span>Игровой зал</span>
+                <select
+                  name="room"
+                  onChange={(event) => {
+                    if (isBookingRoom(event.target.value)) {
+                      updateField("room", event.target.value);
+                    }
+                  }}
+                  value={form.room}
+                >
+                  {BOOKING_ROOMS.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label>
                 <span>Комментарий</span>
                 <textarea
                   name="comment"
@@ -241,6 +292,7 @@ export function Booking() {
                     <span>
                       {formatBookingDate(booking.date)} · {booking.time}
                     </span>
+                    <span>{booking.room}</span>
                     <span>{booking.phone}</span>
                     {booking.comment ? <p>{booking.comment}</p> : null}
                   </article>

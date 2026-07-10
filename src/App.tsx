@@ -6,7 +6,6 @@ import { Navbar } from "./components/layout/Navbar";
 import { About } from "./components/sections/About";
 import { Booking } from "./components/sections/Booking";
 import { Contacts } from "./components/sections/Contacts";
-import { Gallery } from "./components/sections/Gallery";
 import { Hero } from "./components/sections/Hero";
 import { Zones } from "./components/sections/Zones";
 
@@ -33,7 +32,6 @@ export default function App() {
           <Hero />
           <About />
           <Zones />
-          <Gallery />
           <Booking />
           <Contacts />
         </main>

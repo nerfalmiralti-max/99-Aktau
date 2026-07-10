@@ -30,18 +30,3 @@ export const zoneCards = [
     icon: DoorOpen,
   },
 ];
-
-export const galleryImages = [
-  {
-    title: "Место для фото",
-  },
-  {
-    title: "Место для фото",
-  },
-  {
-    title: "Место для фото",
-  },
-  {
-    title: "Место для фото",
-  },
-];

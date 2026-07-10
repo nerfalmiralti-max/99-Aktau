@@ -1,8 +1,13 @@
+export const BOOKING_ROOMS = ["Основной зал", "VIP-зал"] as const;
+
+export type BookingRoom = (typeof BOOKING_ROOMS)[number];
+
 export type BookingInput = {
   name: string;
   phone: string;
   date: string;
   time: string;
+  room: BookingRoom;
   comment: string;
 };
 
