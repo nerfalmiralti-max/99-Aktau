@@ -1,0 +1,257 @@
+import { gsap } from "gsap";
+import { CalendarCheck } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { BrandLogo } from "../brand/BrandLogo";
+import "./CardNav.css";
+
+export type CardNavLink = {
+  label: string;
+  path: string;
+};
+
+export type CardNavItem = {
+  bgColor: string;
+  label: string;
+  links: CardNavLink[];
+  textColor: string;
+};
+
+type CardNavProps = {
+  adminControl: ReactNode;
+  className?: string;
+  ease?: string;
+  isScrolled: boolean;
+  items: CardNavItem[];
+};
+
+export function CardNav({
+  adminControl,
+  className = "",
+  ease = "power3.out",
+  isScrolled,
+  items,
+}: CardNavProps) {
+  const { pathname } = useLocation();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const navRef = useRef<HTMLElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const cardsRef = useRef<HTMLElement[]>([]);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const previousPathRef = useRef(pathname);
+
+  const collapsedHeight = useCallback(
+    () => window.matchMedia("(max-width: 980px)").matches ? 66 : 76,
+    [],
+  );
+
+  const calculateHeight = useCallback(() => {
+    const content = contentRef.current;
+    if (!content) {
+      return collapsedHeight();
+    }
+
+    const previousPosition = content.style.position;
+    const previousVisibility = content.style.visibility;
+    const previousPointerEvents = content.style.pointerEvents;
+    content.style.position = "static";
+    content.style.visibility = "visible";
+    content.style.pointerEvents = "none";
+    const height = collapsedHeight() + content.offsetHeight;
+    content.style.position = previousPosition;
+    content.style.visibility = previousVisibility;
+    content.style.pointerEvents = previousPointerEvents;
+    return height;
+  }, [collapsedHeight]);
+
+  const createTimeline = useCallback(() => {
+    const nav = navRef.current;
+    if (!nav) {
+      return null;
+    }
+
+    gsap.set(nav, { height: collapsedHeight(), overflow: "hidden" });
+    gsap.set(cardsRef.current, { opacity: 0, y: 30 });
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const timeline = gsap.timeline({ paused: true });
+    timeline.to(nav, {
+      duration: reduceMotion ? 0 : 0.42,
+      ease,
+      height: calculateHeight,
+    });
+    timeline.to(
+      cardsRef.current,
+      {
+        duration: reduceMotion ? 0 : 0.38,
+        ease,
+        opacity: 1,
+        stagger: reduceMotion ? 0 : 0.07,
+        y: 0,
+      },
+      "-=0.16",
+    );
+    return timeline;
+  }, [calculateHeight, collapsedHeight, ease]);
+
+  useLayoutEffect(() => {
+    const timeline = createTimeline();
+    timelineRef.current = timeline;
+
+    return () => {
+      timeline?.kill();
+      timelineRef.current = null;
+    };
+  }, [createTimeline, items]);
+
+  const closeMenu = useCallback(() => {
+    const timeline = timelineRef.current;
+    if (!timeline || !isExpanded) {
+      return;
+    }
+    timeline.eventCallback("onReverseComplete", () => setIsExpanded(false));
+    timeline.reverse();
+  }, [isExpanded]);
+
+  useEffect(() => {
+    if (previousPathRef.current !== pathname) {
+      previousPathRef.current = pathname;
+      closeMenu();
+    }
+  }, [closeMenu, pathname]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 980px)");
+    const syncBodyLock = () => {
+      document.body.classList.toggle("has-open-menu", isExpanded && media.matches);
+    };
+    syncBodyLock();
+    media.addEventListener("change", syncBodyLock);
+
+    return () => {
+      media.removeEventListener("change", syncBodyLock);
+      document.body.classList.remove("has-open-menu");
+    };
+  }, [isExpanded]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const timeline = timelineRef.current;
+      if (!timeline) {
+        return;
+      }
+      timeline.kill();
+      const replacement = createTimeline();
+      if (replacement && isExpanded) {
+        replacement.progress(1);
+        gsap.set(navRef.current, { height: calculateHeight() });
+      }
+      timelineRef.current = replacement;
+    };
+    const handlePointerDown = (event: PointerEvent) => {
+      if (isExpanded && navRef.current && !navRef.current.contains(event.target as Node)) {
+        closeMenu();
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeMenu();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [calculateHeight, closeMenu, createTimeline, isExpanded]);
+
+  const toggleMenu = () => {
+    const timeline = timelineRef.current;
+    if (!timeline) {
+      return;
+    }
+    if (isExpanded) {
+      closeMenu();
+      return;
+    }
+    timeline.eventCallback("onReverseComplete", null);
+    setIsExpanded(true);
+    timeline.play(0);
+  };
+
+  return (
+    <header className={`card-nav-container ${className}`.trim()}>
+      <nav
+        className={`card-nav ${isExpanded ? "is-open" : ""} ${isScrolled ? "is-scrolled" : ""}`}
+        ref={navRef}
+        aria-label="Основная навигация"
+      >
+        <div className="card-nav-top">
+          <button
+            aria-expanded={isExpanded}
+            aria-label={isExpanded ? "Закрыть меню" : "Открыть меню"}
+            className={`card-nav-menu-button ${isExpanded ? "is-open" : ""}`}
+            onClick={toggleMenu}
+            type="button"
+          >
+            <span />
+            <span />
+          </button>
+
+          <Link className="card-nav-brand" onClick={closeMenu} to="/">
+            <BrandLogo />
+          </Link>
+
+          <Link className="button button-primary card-nav-cta" onClick={closeMenu} to="/booking">
+            <span>Забронировать</span>
+            <CalendarCheck aria-hidden size={16} />
+          </Link>
+        </div>
+
+        <div className="card-nav-content" ref={contentRef} aria-hidden={!isExpanded}>
+          {items.map((item, index) => (
+            <section
+              className="card-nav-card"
+              key={item.label}
+              ref={(element) => {
+                if (element) cardsRef.current[index] = element;
+              }}
+              style={{ backgroundColor: item.bgColor, color: item.textColor }}
+            >
+              <span className="card-nav-card-label">{item.label}</span>
+              <div className="card-nav-links">
+                {item.links.map((link) => (
+                  <NavLink
+                    className={({ isActive }) => isActive ? "is-active" : ""}
+                    end={link.path === "/"}
+                    key={link.path}
+                    onClick={closeMenu}
+                    to={link.path}
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
+                {index === items.length - 1 ? (
+                  <div className="card-nav-admin-slot" onClick={closeMenu}>
+                    {adminControl}
+                  </div>
+                ) : null}
+              </div>
+            </section>
+          ))}
+        </div>
+      </nav>
+    </header>
+  );
+}

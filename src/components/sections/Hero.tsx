@@ -1,16 +1,31 @@
 import { motion } from "framer-motion";
 import { ArrowDown, ArrowRight, CalendarCheck, MapPin } from "lucide-react";
+import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { AnimatedController } from "../brand/AnimatedController";
 import { siteConfig } from "../../config/site.config";
 import { ButtonLink } from "../ui/Button";
 
 const MotionLink = motion.create(Link);
+const DarkVeil = lazy(() => import("../react-bits/DarkVeil"));
 
 export function Hero() {
   return (
     <section className="hero-section" id="home" aria-label="Главный экран">
       <div className="hero-image media-placeholder hero-media-placeholder" aria-hidden />
+      <div className="hero-dark-veil" aria-hidden>
+        <Suspense fallback={null}>
+          <DarkVeil
+            hueShift={6}
+            noiseIntensity={0.012}
+            resolutionScale={0.55}
+            scanlineFrequency={0}
+            scanlineIntensity={0}
+            speed={0.16}
+            warpAmount={0.08}
+          />
+        </Suspense>
+      </div>
       <div className="hero-overlay" />
       <div className="container hero-content">
         <div className="hero-copy">

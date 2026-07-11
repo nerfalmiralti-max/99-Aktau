@@ -21,6 +21,7 @@ import {
 import { isBookingRoom } from "../../services/booking/bookingRules";
 import { formatBookingDate, getLocalToday } from "../../utils/dateUtils";
 import { InnerPage } from "../layout/InnerPage";
+import { PremiumBorderGlow } from "../react-bits/BorderGlow";
 import { Reveal } from "../ui/Reveal";
 
 type BookingProps = {
@@ -244,7 +245,8 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
     >
       <div className="booking-layout">
           <Reveal>
-            <form className="booking-form" onSubmit={handleSubmit} noValidate>
+            <PremiumBorderGlow className="booking-form-glow">
+              <form className="booking-form" onSubmit={handleSubmit} noValidate>
               <div className="form-row">
                 <label>
                   <span>Имя</span>
@@ -371,7 +373,8 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
                   <span>{message}</span>
                 </div>
               ) : null}
-            </form>
+              </form>
+            </PremiumBorderGlow>
           </Reveal>
 
           <Reveal className="booking-panel" delay={0.1}>
@@ -384,38 +387,40 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
               ) : adminBookings.length ? (
                 <div className="booking-list admin-booking-list">
                   {adminBookings.map((booking) => (
-                    <article className="booking-list-item" key={booking.id}>
-                      <strong>{booking.name}</strong>
-                      <span>{booking.phone}</span>
-                      <span>{formatBookingDate(booking.date)} · {booking.time}</span>
-                      <span>{booking.room}</span>
-                      <span>{BOOKING_TARIFF_LABELS[booking.tariff]} · {formatPrice(booking.price)}</span>
-                      <BookingStatusLabel status={booking.status} />
-                      <span>Создана: {new Date(booking.createdAt).toLocaleString("ru-RU")}</span>
-                      {booking.comment ? <p>{booking.comment}</p> : null}
-                      <div className="booking-admin-actions">
-                        <button
-                          disabled={booking.status === "accepted"}
-                          onClick={() => void updateStatus(booking.id, "accepted")}
-                          type="button"
-                        >
-                          <Check aria-hidden size={15} />
-                          Принять
-                        </button>
-                        <button
-                          disabled={booking.status === "rejected"}
-                          onClick={() => void updateStatus(booking.id, "rejected")}
-                          type="button"
-                        >
-                          <X aria-hidden size={15} />
-                          Отклонить
-                        </button>
-                        <button onClick={() => void deleteBooking(booking.id)} type="button">
-                          <Trash2 aria-hidden size={15} />
-                          Удалить
-                        </button>
-                      </div>
-                    </article>
+                    <PremiumBorderGlow className="admin-booking-glow" key={booking.id}>
+                      <article className="booking-list-item">
+                        <strong>{booking.name}</strong>
+                        <span>{booking.phone}</span>
+                        <span>{formatBookingDate(booking.date)} · {booking.time}</span>
+                        <span>{booking.room}</span>
+                        <span>{BOOKING_TARIFF_LABELS[booking.tariff]} · {formatPrice(booking.price)}</span>
+                        <BookingStatusLabel status={booking.status} />
+                        <span>Создана: {new Date(booking.createdAt).toLocaleString("ru-RU")}</span>
+                        {booking.comment ? <p>{booking.comment}</p> : null}
+                        <div className="booking-admin-actions">
+                          <button
+                            disabled={booking.status === "accepted"}
+                            onClick={() => void updateStatus(booking.id, "accepted")}
+                            type="button"
+                          >
+                            <Check aria-hidden size={15} />
+                            Принять
+                          </button>
+                          <button
+                            disabled={booking.status === "rejected"}
+                            onClick={() => void updateStatus(booking.id, "rejected")}
+                            type="button"
+                          >
+                            <X aria-hidden size={15} />
+                            Отклонить
+                          </button>
+                          <button onClick={() => void deleteBooking(booking.id)} type="button">
+                            <Trash2 aria-hidden size={15} />
+                            Удалить
+                          </button>
+                        </div>
+                      </article>
+                    </PremiumBorderGlow>
                   ))}
                 </div>
               ) : (
