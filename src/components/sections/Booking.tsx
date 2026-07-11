@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { CalendarCheck, Check, CheckCircle2, Loader2, Trash2, X } from "lucide-react";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   adminBookingApi,
   bookingApi,
@@ -19,8 +20,8 @@ import {
 } from "../../services/booking/types";
 import { isBookingRoom } from "../../services/booking/bookingRules";
 import { formatBookingDate, getLocalToday } from "../../utils/dateUtils";
+import { InnerPage } from "../layout/InnerPage";
 import { Reveal } from "../ui/Reveal";
-import { SectionHeader } from "../ui/SectionHeader";
 
 type BookingProps = {
   isAdmin: boolean;
@@ -61,7 +62,9 @@ function BookingStatusLabel({ status }: { status: BookingStatus }) {
 }
 
 export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
-  const [form, setForm] = useState<BookingInput>(initialForm);
+  const [searchParams] = useSearchParams();
+  const initialRoom = searchParams.get("room") === "vip" ? BOOKING_ROOMS[1] : BOOKING_ROOMS[0];
+  const [form, setForm] = useState<BookingInput>(() => ({ ...initialForm, room: initialRoom }));
   const [errors, setErrors] = useState<BookingErrors>({});
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [confirmation, setConfirmation] = useState<BookingRequest | null>(null);
@@ -169,7 +172,7 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
         comment: candidate.comment.trim(),
       });
       setConfirmation(result.booking);
-      setForm(initialForm);
+      setForm({ ...initialForm, room: initialRoom });
       setSubmitState("success");
       setMessage(result.message);
       if (isAdmin) {
@@ -232,15 +235,14 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
   };
 
   return (
-    <section className="section booking-section" id="booking">
-      <div className="container">
-        <SectionHeader
-          eyebrow="Бронирование"
-          title="Оставьте заявку на удобный вечер."
-          text="Выберите зал, тариф, дату и время — заявка сохранится и будет доступна после обновления страницы."
-        />
-
-        <div className="booking-layout">
+    <InnerPage
+      className="booking-section"
+      eyebrow="Бронирование"
+      id="booking"
+      title="Оставьте заявку на удобный вечер."
+      text="Выберите зал, тариф, дату и время — заявка сохранится и будет доступна после обновления страницы."
+    >
+      <div className="booking-layout">
           <Reveal>
             <form className="booking-form" onSubmit={handleSubmit} noValidate>
               <div className="form-row">
@@ -441,8 +443,7 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
               </button>
             ) : null}
           </Reveal>
-        </div>
       </div>
-    </section>
+    </InnerPage>
   );
 }

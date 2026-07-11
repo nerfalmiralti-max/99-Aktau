@@ -1,7 +1,6 @@
 export type NavigationItem = {
   label: string;
-  href: `#${string}`;
-  sectionId: string;
+  path: "/" | `/${string}`;
 };
 
 export const siteConfig = {
@@ -12,11 +11,11 @@ export const siteConfig = {
     logoSrc: "/brand/logo.png",
   },
   navigation: [
-    { label: "Главная", href: "#home", sectionId: "home" },
-    { label: "О клубе", href: "#about", sectionId: "about" },
-    { label: "Игровые зоны", href: "#zones", sectionId: "zones" },
-    { label: "Бронирование", href: "#booking", sectionId: "booking" },
-    { label: "Контакты", href: "#contacts", sectionId: "contacts" },
+    { label: "Главная", path: "/" },
+    { label: "О клубе", path: "/about" },
+    { label: "Игровые зоны", path: "/zones" },
+    { label: "Бронирование", path: "/booking" },
+    { label: "Контакты", path: "/contacts" },
   ] satisfies NavigationItem[],
   contacts: {
     phone: "+7 701 081 54 95",

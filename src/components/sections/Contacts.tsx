@@ -8,8 +8,8 @@ import {
   createTelHref,
   createWhatsAppHref,
 } from "../../utils/linkUtils";
+import { InnerPage } from "../layout/InnerPage";
 import { Reveal } from "../ui/Reveal";
-import { SectionHeader } from "../ui/SectionHeader";
 
 type ContactCardProps = {
   icon: LucideIcon;
@@ -55,15 +55,14 @@ export function Contacts() {
   const mapQuery = contacts.address ?? contacts.mapQuery;
 
   return (
-    <section className="section contacts-section" id="contacts">
-      <div className="container">
-        <SectionHeader
-          eyebrow="Контакты"
-          title="Адрес, связь и маршрут без лишних шагов."
-          text="Все контакты 99 AKTAU хранятся в одном конфиге, поэтому сайт готов к подключению реальных телефона, WhatsApp и Instagram."
-        />
-
-        <div className="contacts-layout">
+    <InnerPage
+      className="contacts-section"
+      eyebrow="Контакты"
+      id="contacts"
+      title="Адрес, связь и маршрут без лишних шагов."
+      text="Все контакты 99 AKTAU хранятся в одном конфиге, поэтому сайт готов к подключению реальных телефона, WhatsApp и Instagram."
+    >
+      <div className="contacts-layout">
           <Reveal className="contacts-list">
             <ContactCard
               icon={Phone}
@@ -109,8 +108,7 @@ export function Contacts() {
               referrerPolicy="no-referrer-when-downgrade"
             />
           </Reveal>
-        </div>
       </div>
-    </section>
+    </InnerPage>
   );
 }

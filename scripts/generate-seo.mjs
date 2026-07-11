@@ -1,8 +1,8 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-const DEFAULT_SITE_URL = "https://99-aktau.vercel.app";
-const configuredUrl = process.env.SITE_URL?.trim() || DEFAULT_SITE_URL;
+const seoConfig = JSON.parse(await readFile(resolve("seo.config.json"), "utf8"));
+const configuredUrl = process.env.SITE_URL?.trim() || seoConfig.siteUrl;
 const siteUrl = new URL(configuredUrl);
 
 if (siteUrl.protocol !== "https:") {
@@ -16,10 +16,6 @@ const origin = siteUrl.origin;
 const publicDirectory = resolve("public");
 const lastModified = new Date().toISOString().slice(0, 10);
 
-const routes = [
-  { path: "/", changeFrequency: "weekly", priority: "1.0" },
-];
-
 const robots = [
   "User-agent: *",
   "Allow: /",
@@ -29,7 +25,7 @@ const robots = [
   "",
 ].join("\n");
 
-const sitemapEntries = routes.map(({ path, changeFrequency, priority }) => `  <url>
+const sitemapEntries = seoConfig.pages.map(({ path, changeFrequency, priority }) => `  <url>
     <loc>${new URL(path, origin).href}</loc>
     <lastmod>${lastModified}</lastmod>
     <changefreq>${changeFrequency}</changefreq>

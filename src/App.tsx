@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AdminLoginModal } from "./components/admin/AdminLoginModal";
 import { Footer } from "./components/layout/Footer";
 import { LoadingScreen } from "./components/layout/LoadingScreen";
 import { Navbar } from "./components/layout/Navbar";
+import { PageMetadata } from "./components/layout/PageMetadata";
 import { About } from "./components/sections/About";
 import { Booking } from "./components/sections/Booking";
 import { Contacts } from "./components/sections/Contacts";
@@ -13,7 +15,18 @@ import { adminApi } from "./services/adminApi";
 
 type AdminState = "loading" | "guest" | "admin";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
+
+  return null;
+}
+
 export default function App() {
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [adminState, setAdminState] = useState<AdminState>("loading");
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
@@ -55,6 +68,8 @@ export default function App() {
 
   return (
     <>
+      <PageMetadata />
+      <ScrollToTop />
       <AnimatePresence>{isLoading ? <LoadingScreen /> : null}</AnimatePresence>
       <motion.div
         className="app-shell"
@@ -67,15 +82,23 @@ export default function App() {
           onAdminLogin={() => setIsAdminLoginOpen(true)}
           onAdminLogout={handleAdminLogout}
         />
-        <main>
-          <Hero />
-          <About />
-          <Zones />
-          <Booking
-            isAdmin={adminState === "admin"}
-            onAdminSessionExpired={() => setAdminState("guest")}
-          />
-          <Contacts />
+        <main className={location.pathname === "/" ? undefined : "inner-page"}>
+          <Routes>
+            <Route path="/" element={<Hero />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/zones" element={<Zones />} />
+            <Route
+              path="/booking"
+              element={(
+                <Booking
+                  isAdmin={adminState === "admin"}
+                  onAdminSessionExpired={() => setAdminState("guest")}
+                />
+              )}
+            />
+            <Route path="/contacts" element={<Contacts />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </main>
         <Footer />
       </motion.div>

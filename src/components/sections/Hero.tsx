@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { ArrowDown, ArrowRight, CalendarCheck, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 import { AnimatedController } from "../brand/AnimatedController";
 import { siteConfig } from "../../config/site.config";
 import { ButtonLink } from "../ui/Button";
+
+const MotionLink = motion.create(Link);
 
 export function Hero() {
   return (
@@ -41,10 +44,10 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.58 }}
           >
-            <ButtonLink href="#booking" icon={<CalendarCheck aria-hidden size={18} />}>
+            <ButtonLink to="/booking" icon={<CalendarCheck aria-hidden size={18} />}>
               Забронировать
             </ButtonLink>
-            <ButtonLink href="#zones" variant="secondary" icon={<ArrowRight aria-hidden size={18} />}>
+            <ButtonLink to="/zones" variant="secondary" icon={<ArrowRight aria-hidden size={18} />}>
               Игровые зоны
             </ButtonLink>
           </motion.div>
@@ -53,16 +56,16 @@ export function Hero() {
         <AnimatedController />
       </div>
 
-      <motion.a
+      <MotionLink
         className="hero-scroll"
-        href="#about"
+        to="/about"
         aria-label="Перейти к разделу о клубе"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ opacity: { delay: 1.1 }, y: { duration: 2.2, repeat: Infinity } }}
       >
         <ArrowDown aria-hidden size={18} />
-      </motion.a>
+      </MotionLink>
     </section>
   );
 }

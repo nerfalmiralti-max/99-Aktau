@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarCheck, Loader2, LogOut, Menu, ShieldCheck, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { BrandLogo } from "../brand/BrandLogo";
 import { siteConfig } from "../../config/site.config";
-import { useScrollSpy } from "../../hooks/useScrollSpy";
 import { ButtonLink } from "../ui/Button";
 
 type AdminState = "loading" | "guest" | "admin";
@@ -56,11 +56,6 @@ function AdminNavigationControl({
 export function Navbar({ adminState, onAdminLogin, onAdminLogout }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const sectionIds = useMemo(
-    () => siteConfig.navigation.map((item) => item.sectionId),
-    [],
-  );
-  const activeSection = useScrollSpy(sectionIds);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 24);
@@ -93,19 +88,20 @@ export function Navbar({ adminState, onAdminLogin, onAdminLogout }: NavbarProps)
       animate={{ x: "-50%", y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <a className="brand-mark" href="#home" onClick={closeMenu}>
+      <Link className="brand-mark" to="/" onClick={closeMenu}>
         <BrandLogo />
-      </a>
+      </Link>
 
       <nav className="desktop-nav" aria-label="Основная навигация">
         {siteConfig.navigation.map((item) => (
-          <a
-            className={activeSection === item.sectionId ? "is-active" : ""}
-            href={item.href}
-            key={item.href}
+          <NavLink
+            className={({ isActive }) => isActive ? "is-active" : ""}
+            end={item.path === "/"}
+            to={item.path}
+            key={item.path}
           >
             {item.label}
-          </a>
+          </NavLink>
         ))}
         <AdminNavigationControl
           adminState={adminState}
@@ -116,7 +112,7 @@ export function Navbar({ adminState, onAdminLogin, onAdminLogout }: NavbarProps)
 
       <ButtonLink
         className="nav-cta"
-        href="#booking"
+        to="/booking"
         icon={<CalendarCheck aria-hidden size={16} />}
         onClick={closeMenu}
       >
@@ -143,18 +139,19 @@ export function Navbar({ adminState, onAdminLogin, onAdminLogout }: NavbarProps)
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.24, ease: "easeOut" }}
           >
-            <a className="mobile-nav-brand" href="#home" onClick={closeMenu}>
+            <Link className="mobile-nav-brand" to="/" onClick={closeMenu}>
               <BrandLogo />
-            </a>
+            </Link>
             {siteConfig.navigation.map((item) => (
-              <a
-                className={activeSection === item.sectionId ? "is-active" : ""}
-                href={item.href}
-                key={item.href}
+              <NavLink
+                className={({ isActive }) => isActive ? "is-active" : ""}
+                end={item.path === "/"}
+                to={item.path}
+                key={item.path}
                 onClick={closeMenu}
               >
                 {item.label}
-              </a>
+              </NavLink>
             ))}
             <AdminNavigationControl
               adminState={adminState}
@@ -164,7 +161,7 @@ export function Navbar({ adminState, onAdminLogin, onAdminLogout }: NavbarProps)
             />
             <ButtonLink
               className="mobile-nav-cta"
-              href="#booking"
+              to="/booking"
               icon={<CalendarCheck aria-hidden size={16} />}
               onClick={closeMenu}
             >

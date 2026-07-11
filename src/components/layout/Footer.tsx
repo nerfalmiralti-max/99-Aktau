@@ -1,5 +1,6 @@
 import { siteConfig } from "../../config/site.config";
 import { BrandLogo } from "../brand/BrandLogo";
+import { Link } from "react-router-dom";
 import {
   createInstagramHref,
   createTelHref,
@@ -12,15 +13,15 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-grid">
-        <a className="brand-mark footer-brand" href="#home">
+        <Link className="brand-mark footer-brand" to="/">
           <BrandLogo />
-        </a>
+        </Link>
 
         <nav className="footer-nav" aria-label="Навигация в футере">
           {siteConfig.navigation.map((item) => (
-            <a href={item.href} key={item.href}>
+            <Link to={item.path} key={item.path}>
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 

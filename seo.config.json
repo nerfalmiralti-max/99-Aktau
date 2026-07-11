@@ -1,0 +1,40 @@
+{
+  "siteUrl": "https://99-aktau.vercel.app",
+  "pages": [
+    {
+      "path": "/",
+      "title": "99 AKTAU — PlayStation клуб в Актау | Онлайн-бронирование",
+      "description": "99 AKTAU — современный PlayStation клуб в Актау. Основной и VIP-зал, онлайн-бронирование, комфортная игровая атмосфера и удобное расположение.",
+      "changeFrequency": "weekly",
+      "priority": "1.0"
+    },
+    {
+      "path": "/about",
+      "title": "О клубе | 99 AKTAU",
+      "description": "99 AKTAU подается как современное пространство с чистой композицией, темным премиальным светом и понятным путем к бронированию.",
+      "changeFrequency": "monthly",
+      "priority": "0.8"
+    },
+    {
+      "path": "/zones",
+      "title": "Игровые зоны | 99 AKTAU",
+      "description": "Два формата бронирования с понятной стоимостью для каждого зала.",
+      "changeFrequency": "weekly",
+      "priority": "0.9"
+    },
+    {
+      "path": "/booking",
+      "title": "Онлайн-бронирование | 99 AKTAU",
+      "description": "Выберите зал, тариф, дату и время — заявка сохранится и будет доступна после обновления страницы.",
+      "changeFrequency": "weekly",
+      "priority": "0.9"
+    },
+    {
+      "path": "/contacts",
+      "title": "Контакты | 99 AKTAU",
+      "description": "Все контакты 99 AKTAU хранятся в одном конфиге, поэтому сайт готов к подключению реальных телефона, WhatsApp и Instagram.",
+      "changeFrequency": "monthly",
+      "priority": "0.8"
+    }
+  ]
+}

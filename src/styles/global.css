@@ -93,6 +93,30 @@ img {
   scroll-margin-top: calc(var(--nav-height) + 26px);
 }
 
+.inner-page {
+  min-height: 100svh;
+}
+
+.page-section {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  padding: 0;
+}
+
+.page-header {
+  padding: calc(var(--nav-height) + 56px) 0 58px;
+}
+
+.page-header .section-header {
+  margin-bottom: 0;
+}
+
+.page-content {
+  flex: 1;
+  padding-bottom: 132px;
+}
+
 .section-header {
   width: min(800px, 100%);
   margin-bottom: 58px;
@@ -110,14 +134,14 @@ img {
   text-transform: uppercase;
 }
 
-.section-header h2,
+.section-header h1,
 .hero-content h1 {
   margin: 0;
   font-weight: 820;
   letter-spacing: 0;
 }
 
-.section-header h2 {
+.section-header h1 {
   max-width: 900px;
   font-size: 4.35rem;
   line-height: 0.95;
@@ -709,7 +733,6 @@ img {
 }
 
 .about-section {
-  padding-top: 72px;
   background:
     linear-gradient(180deg, #07070a 0%, #111015 100%),
     linear-gradient(90deg, rgba(216, 177, 107, 0.05), transparent 44%);
@@ -1388,7 +1411,7 @@ a.contact-card:hover {
     margin-top: -10px;
   }
 
-  .section-header h2 {
+  .section-header h1 {
     font-size: 3.5rem;
   }
 
@@ -1416,15 +1439,23 @@ a.contact-card:hover {
     padding: 82px 0;
   }
 
-  .about-section {
-    padding-top: 48px;
+  .page-section {
+    padding: 0;
+  }
+
+  .page-header {
+    padding: calc(var(--nav-height) + 16px) 0 38px;
+  }
+
+  .page-content {
+    padding-bottom: 82px;
   }
 
   .section-header {
     margin-bottom: 38px;
   }
 
-  .section-header h2 {
+  .section-header h1 {
     font-size: 2.45rem;
     line-height: 1;
   }
@@ -1566,7 +1597,7 @@ a.contact-card:hover {
     font-size: 3.45rem;
   }
 
-  .section-header h2 {
+  .section-header h1 {
     font-size: 2.08rem;
   }
 }
