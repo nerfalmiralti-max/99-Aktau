@@ -1,7 +1,9 @@
 {
   "name": "99 AKTAU",
   "short_name": "99 AKTAU",
-  "description": "Премиальный gaming lounge в Актау.",
+  "description": "99 AKTAU — современный PlayStation клуб в Актау. Основной и VIP-зал, онлайн-бронирование, комфортная игровая атмосфера и удобное расположение.",
+  "lang": "ru-KZ",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

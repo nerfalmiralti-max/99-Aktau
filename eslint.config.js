@@ -9,7 +9,7 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ["api/**/*.mjs", "server/**/*.mjs"],
+    files: ["api/**/*.mjs", "server/**/*.mjs", "scripts/**/*.mjs"],
     languageOptions: {
       ecmaVersion: 2024,
       globals: globals.node,

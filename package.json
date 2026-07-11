@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc -b && vite build",
+    "seo:generate": "node scripts/generate-seo.mjs",
+    "build": "npm run seo:generate && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview --host 127.0.0.1",
     "test:server": "node --test server/*.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "latest",
+    "@vercel/analytics": "^2.0.1",
     "framer-motion": "latest",
     "lucide-react": "latest",
     "react": "latest",
