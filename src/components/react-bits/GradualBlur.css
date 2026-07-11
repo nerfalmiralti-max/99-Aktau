@@ -1,0 +1,35 @@
+.gradual-blur {
+  pointer-events: none;
+  isolation: isolate;
+  contain: strict;
+}
+
+.gradual-blur-layer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  -webkit-backdrop-filter: blur(var(--gradual-blur-amount));
+  backdrop-filter: blur(var(--gradual-blur-amount));
+  -webkit-mask-image: var(--gradual-blur-mask);
+  mask-image: var(--gradual-blur-mask);
+}
+
+.gradual-blur.is-animated .gradual-blur-layer {
+  transition: backdrop-filter 300ms ease-out;
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .gradual-blur {
+    background: linear-gradient(to bottom, transparent, rgba(7, 7, 10, 0.28));
+  }
+
+  .gradual-blur-layer {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradual-blur.is-animated .gradual-blur-layer {
+    transition: none;
+  }
+}

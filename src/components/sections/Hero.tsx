@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { AnimatedController } from "../brand/AnimatedController";
 import { siteConfig } from "../../config/site.config";
 import { ButtonLink } from "../ui/Button";
+import { GradualBlur } from "../react-bits/GradualBlur";
 
 const MotionLink = motion.create(Link);
 
@@ -66,6 +67,19 @@ export function Hero() {
       >
         <ArrowDown aria-hidden size={18} />
       </MotionLink>
+
+      <GradualBlur
+        target="parent"
+        position="bottom"
+        height="4rem"
+        strength={1}
+        divCount={4}
+        curve="bezier"
+        exponential={false}
+        opacity={0.8}
+        animated={false}
+        className="hero-gradual-blur"
+      />
     </section>
   );
 }
