@@ -387,7 +387,11 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
               ) : adminBookings.length ? (
                 <div className="booking-list admin-booking-list">
                   {adminBookings.map((booking) => (
-                    <PremiumBorderGlow className="admin-booking-glow" key={booking.id}>
+                    <PremiumBorderGlow
+                      backgroundColor="transparent"
+                      className="admin-booking-glow"
+                      key={booking.id}
+                    >
                       <article className="booking-list-item">
                         <strong>{booking.name}</strong>
                         <span>{booking.phone}</span>

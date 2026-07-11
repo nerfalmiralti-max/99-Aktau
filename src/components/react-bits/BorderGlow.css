@@ -153,3 +153,23 @@
     display: none;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .border-glow-card::before,
+  .border-glow-card::after,
+  .border-glow-card > .edge-light {
+    transition: none;
+  }
+}
+
+@supports not (mask-image: conic-gradient(from 0deg, #000, transparent)) {
+  .border-glow-card::before,
+  .border-glow-card::after,
+  .border-glow-card > .edge-light {
+    display: none;
+  }
+
+  .premium-border-glow:hover {
+    border-color: rgba(201, 108, 255, 0.42);
+  }
+}

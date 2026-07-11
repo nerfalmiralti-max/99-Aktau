@@ -15,7 +15,7 @@ export function Zones() {
       title="Тарифы залов."
       text="Два формата бронирования с понятной стоимостью для каждого зала."
     >
-      <div className="zones-layout">
+      <div className="zones-layout" id="tariffs">
         <Reveal className="zones-visual">
           <div className="media-placeholder zones-placeholder" aria-hidden>
             <span>Фото будет добавлено</span>
@@ -59,7 +59,7 @@ export function Zones() {
 
       <Reveal delay={0.1}>
         <PremiumBorderGlow className="promotion-glow">
-          <div className="promotion-block">
+          <div className="promotion-block" id="promotion">
             <div className="promotion-copy">
               <span className="eyebrow">Акция 2+1</span>
               <h3>Три часа по фиксированной цене.</h3>

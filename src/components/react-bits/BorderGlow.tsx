@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useCallback, useEffect, type ReactNode } from 'react';
 import './BorderGlow.css';
 
@@ -173,13 +175,17 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   );
 };
 
-type PremiumBorderGlowProps = Pick<BorderGlowProps, 'children' | 'className'>;
+type PremiumBorderGlowProps = Pick<BorderGlowProps, 'children' | 'className' | 'backgroundColor'>;
 
-export function PremiumBorderGlow({ children, className = '' }: PremiumBorderGlowProps) {
+export function PremiumBorderGlow({
+  backgroundColor = 'var(--surface)',
+  children,
+  className = '',
+}: PremiumBorderGlowProps) {
   return (
     <BorderGlow
       animated={false}
-      backgroundColor="rgba(18, 17, 24, 0.72)"
+      backgroundColor={backgroundColor}
       borderRadius={8}
       className={`premium-border-glow ${className}`.trim()}
       colors={['#c96cff', '#9d55df', '#7130a8']}

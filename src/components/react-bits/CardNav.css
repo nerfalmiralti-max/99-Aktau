@@ -65,6 +65,13 @@
   transform: translateY(-1px);
 }
 
+.card-nav-menu-button:focus-visible,
+.card-nav-links > a:focus-visible,
+.card-nav-cta:focus-visible {
+  outline: 2px solid rgba(201, 108, 255, 0.82);
+  outline-offset: 3px;
+}
+
 .card-nav-menu-button span {
   display: block;
   width: 20px;
@@ -179,8 +186,8 @@
 
 @media (max-width: 980px) {
   .card-nav-container {
-    top: 10px;
-    width: calc(100% - 20px);
+    top: max(10px, env(safe-area-inset-top));
+    width: calc(100% - 20px - env(safe-area-inset-left) - env(safe-area-inset-right));
   }
 
   .card-nav {
@@ -209,10 +216,12 @@
   .card-nav-content {
     grid-template-columns: 1fr;
     gap: 8px;
-    max-height: calc(100svh - var(--nav-height) - 20px);
+    max-height: calc(
+      100svh - var(--nav-height) - max(20px, env(safe-area-inset-top)) - env(safe-area-inset-bottom)
+    );
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 8px 10px 10px;
+    padding: 8px 10px max(10px, env(safe-area-inset-bottom));
   }
 
   .card-nav-card {

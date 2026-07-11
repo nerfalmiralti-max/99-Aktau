@@ -1,8 +1,11 @@
+"use client";
+
 import { gsap } from "gsap";
 import { CalendarCheck } from "lucide-react";
 import {
   useCallback,
   useEffect,
+  useId,
   useLayoutEffect,
   useRef,
   useState,
@@ -12,10 +15,18 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { BrandLogo } from "../brand/BrandLogo";
 import "./CardNav.css";
 
-export type CardNavLink = {
+type InternalCardNavLink = {
   label: string;
   path: string;
 };
+
+type ExternalCardNavLink = {
+  ariaLabel: string;
+  href: string;
+  label: string;
+};
+
+export type CardNavLink = InternalCardNavLink | ExternalCardNavLink;
 
 export type CardNavItem = {
   bgColor: string;
@@ -39,9 +50,11 @@ export function CardNav({
   isScrolled,
   items,
 }: CardNavProps) {
-  const { pathname } = useLocation();
+  const { hash, pathname } = useLocation();
   const [isExpanded, setIsExpanded] = useState(false);
+  const contentId = useId();
   const navRef = useRef<HTMLElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<HTMLElement[]>([]);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
@@ -111,21 +124,37 @@ export function CardNav({
     };
   }, [createTimeline, items]);
 
-  const closeMenu = useCallback(() => {
+  const closeMenu = useCallback((restoreFocus = true) => {
     const timeline = timelineRef.current;
     if (!timeline || !isExpanded) {
+      if (restoreFocus) menuButtonRef.current?.focus();
       return;
     }
-    timeline.eventCallback("onReverseComplete", () => setIsExpanded(false));
+    timeline.eventCallback("onReverseComplete", () => {
+      setIsExpanded(false);
+      if (restoreFocus) {
+        requestAnimationFrame(() => menuButtonRef.current?.focus());
+      }
+    });
     timeline.reverse();
   }, [isExpanded]);
 
   useEffect(() => {
     if (previousPathRef.current !== pathname) {
       previousPathRef.current = pathname;
-      closeMenu();
+      if (isExpanded) closeMenu(true);
     }
-  }, [closeMenu, pathname]);
+  }, [closeMenu, isExpanded, pathname]);
+
+  useEffect(() => {
+    if (!hash) return;
+    const frame = requestAnimationFrame(() => {
+      const target = document.getElementById(hash.slice(1));
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [hash, pathname]);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 980px)");
@@ -157,12 +186,12 @@ export function CardNav({
     };
     const handlePointerDown = (event: PointerEvent) => {
       if (isExpanded && navRef.current && !navRef.current.contains(event.target as Node)) {
-        closeMenu();
+        closeMenu(true);
       }
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        closeMenu();
+        closeMenu(true);
       }
     };
 
@@ -182,7 +211,7 @@ export function CardNav({
       return;
     }
     if (isExpanded) {
-      closeMenu();
+      closeMenu(true);
       return;
     }
     timeline.eventCallback("onReverseComplete", null);
@@ -199,27 +228,39 @@ export function CardNav({
       >
         <div className="card-nav-top">
           <button
+            aria-controls={contentId}
             aria-expanded={isExpanded}
             aria-label={isExpanded ? "Закрыть меню" : "Открыть меню"}
             className={`card-nav-menu-button ${isExpanded ? "is-open" : ""}`}
             onClick={toggleMenu}
+            ref={menuButtonRef}
             type="button"
           >
             <span />
             <span />
           </button>
 
-          <Link className="card-nav-brand" onClick={closeMenu} to="/">
+          <Link className="card-nav-brand" onClick={() => closeMenu(true)} to="/">
             <BrandLogo />
           </Link>
 
-          <Link className="button button-primary card-nav-cta" onClick={closeMenu} to="/booking">
+          <Link
+            className="button button-primary card-nav-cta"
+            onClick={() => closeMenu(true)}
+            to="/booking"
+          >
             <span>Забронировать</span>
             <CalendarCheck aria-hidden size={16} />
           </Link>
         </div>
 
-        <div className="card-nav-content" ref={contentRef} aria-hidden={!isExpanded}>
+        <div
+          aria-hidden={!isExpanded}
+          className="card-nav-content"
+          id={contentId}
+          inert={!isExpanded}
+          ref={contentRef}
+        >
           {items.map((item, index) => (
             <section
               className="card-nav-card"
@@ -231,19 +272,41 @@ export function CardNav({
             >
               <span className="card-nav-card-label">{item.label}</span>
               <div className="card-nav-links">
-                {item.links.map((link) => (
-                  <NavLink
-                    className={({ isActive }) => isActive ? "is-active" : ""}
-                    end={link.path === "/"}
-                    key={link.path}
-                    onClick={closeMenu}
-                    to={link.path}
-                  >
-                    {link.label}
-                  </NavLink>
-                ))}
+                {item.links.map((link) => {
+                  if ("href" in link) {
+                    return (
+                      <a
+                        aria-label={link.ariaLabel}
+                        href={link.href}
+                        key={link.href}
+                        onClick={() => closeMenu(true)}
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        {link.label}
+                      </a>
+                    );
+                  }
+
+                  const hashTarget = link.path.includes("#")
+                    ? `#${link.path.split("#")[1]}`
+                    : "";
+                  return (
+                    <NavLink
+                      className={({ isActive }) => (
+                        isActive && (hashTarget ? hash === hashTarget : !hash) ? "is-active" : ""
+                      )}
+                      end={link.path === "/"}
+                      key={link.path}
+                      onClick={() => closeMenu(true)}
+                      to={link.path}
+                    >
+                      {link.label}
+                    </NavLink>
+                  );
+                })}
                 {index === items.length - 1 ? (
-                  <div className="card-nav-admin-slot" onClick={closeMenu}>
+                  <div className="card-nav-admin-slot" onClick={() => closeMenu(true)}>
                     {adminControl}
                   </div>
                 ) : null}

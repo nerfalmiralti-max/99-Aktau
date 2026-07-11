@@ -1,6 +1,9 @@
+"use client";
+
 import { Loader2, LogOut, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { siteConfig } from "../../config/site.config";
+import { createInstagramHref, createWhatsAppHref } from "../../utils/linkUtils";
 import { CardNav, type CardNavItem } from "../react-bits/CardNav";
 
 type AdminState = "loading" | "guest" | "admin";
@@ -41,20 +44,36 @@ function AdminNavigationControl({ adminState, onAdminLogin, onAdminLogout }: Nav
 
 const cardNavItems: CardNavItem[] = [
   {
-    label: siteConfig.navigation[0].label,
-    links: siteConfig.navigation.slice(0, 2),
+    label: "Клуб",
+    links: siteConfig.navigation.slice(0, 3),
     bgColor: "#17121f",
     textColor: "#f7f4ff",
   },
   {
-    label: siteConfig.navigation[2].label,
-    links: siteConfig.navigation.slice(2, 4),
+    label: "Бронирование",
+    links: [
+      { label: "Забронировать", path: "/booking" },
+      { label: "Тарифы", path: "/zones#tariffs" },
+      { label: "Акция 2+1", path: "/zones#promotion" },
+    ],
     bgColor: "#14121b",
     textColor: "#f7f4ff",
   },
   {
-    label: siteConfig.navigation[4].label,
-    links: siteConfig.navigation.slice(4, 5),
+    label: "Контакты",
+    links: [
+      siteConfig.navigation[4],
+      {
+        ariaLabel: `Открыть WhatsApp ${siteConfig.brand.name}`,
+        href: createWhatsAppHref(siteConfig.contacts.whatsapp),
+        label: "WhatsApp",
+      },
+      {
+        ariaLabel: `Открыть Instagram ${siteConfig.brand.name}`,
+        href: siteConfig.contacts.instagramUrl ?? createInstagramHref(siteConfig.contacts.instagram),
+        label: "Instagram",
+      },
+    ],
     bgColor: "#19131f",
     textColor: "#f7f4ff",
   },
