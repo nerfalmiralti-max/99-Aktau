@@ -75,6 +75,10 @@ function hasValidSession(request, secret) {
   return Number.isFinite(expiresAt) && expiresAt > Date.now() && constantTimeMatch(signature, expected);
 }
 
+export function hasValidAdminSession(request, secret) {
+  return hasValidSession(request, secret);
+}
+
 function sessionCookie(token, maxAge) {
   const secure = process.env.NODE_ENV === "production" || process.env.VERCEL === "1" ? "; Secure" : "";
   return `${SESSION_COOKIE}=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secure}`;

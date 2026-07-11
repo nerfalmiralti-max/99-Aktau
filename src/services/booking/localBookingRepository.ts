@@ -1,4 +1,11 @@
-import type { BookingInput, BookingRepository, BookingRequest } from "./types";
+import {
+  BOOKING_STATUSES,
+  BOOKING_TARIFFS,
+  getBookingPrice,
+  type BookingInput,
+  type BookingRepository,
+  type BookingRequest,
+} from "./types";
 import {
   BookingLimitError,
   isActiveBooking,
@@ -35,6 +42,12 @@ function readBookings() {
       .map((booking) => ({
         ...booking,
         room: isBookingRoom(booking.room) ? booking.room : BOOKING_ROOMS[0],
+        tariff: BOOKING_TARIFFS.includes(booking.tariff) ? booking.tariff : BOOKING_TARIFFS[0],
+        status: BOOKING_STATUSES.includes(booking.status) ? booking.status : BOOKING_STATUSES[0],
+      }))
+      .map((booking) => ({
+        ...booking,
+        price: getBookingPrice(booking.room, booking.tariff),
       }))
       .filter((booking) => isActiveBooking(booking));
 
@@ -65,6 +78,8 @@ export const localBookingRepository: BookingRepository = {
     const booking: BookingRequest = {
       ...input,
       id: createId(),
+      price: getBookingPrice(input.room, input.tariff),
+      status: "pending",
       createdAt: new Date().toISOString(),
     };
 

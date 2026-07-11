@@ -844,6 +844,52 @@ img {
   margin-top: 18px;
 }
 
+.promotion-block {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 28px;
+  align-items: center;
+  margin-top: 18px;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.promotion-copy h3 {
+  margin: 10px 0 0;
+  font-size: 1.32rem;
+}
+
+.promotion-copy p {
+  margin: 12px 0 0;
+  color: var(--text-soft);
+}
+
+.promotion-offers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.promotion-offer {
+  display: grid;
+  gap: 7px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.promotion-offer span {
+  color: var(--text-soft);
+  font-size: 0.86rem;
+}
+
+.promotion-offer strong {
+  color: var(--text);
+}
+
 .booking-section {
   background:
     linear-gradient(180deg, #111015 0%, #07070a 100%),
@@ -970,6 +1016,26 @@ label small {
   padding: 34px;
 }
 
+.booking-price-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid rgba(216, 177, 107, 0.2);
+  border-radius: var(--radius-control);
+  background: rgba(216, 177, 107, 0.08);
+}
+
+.booking-price-summary span {
+  color: var(--text-soft);
+}
+
+.booking-price-summary strong {
+  color: var(--accent-warm);
+  font-size: 1.08rem;
+}
+
 .panel-kicker {
   display: inline-flex;
   margin-bottom: 18px;
@@ -1007,6 +1073,63 @@ label small {
 
 .booking-list-item p {
   margin-top: 6px;
+}
+
+.booking-status {
+  width: fit-content;
+  padding: 5px 9px;
+  border: 1px solid rgba(216, 177, 107, 0.24);
+  border-radius: var(--radius-pill);
+  background: rgba(216, 177, 107, 0.1);
+  color: var(--accent-warm) !important;
+  font-size: 0.78rem;
+  font-weight: 720;
+}
+
+.booking-status.is-accepted {
+  border-color: rgba(130, 224, 164, 0.26);
+  background: rgba(130, 224, 164, 0.1);
+  color: var(--success) !important;
+}
+
+.booking-status.is-rejected {
+  border-color: rgba(255, 122, 136, 0.26);
+  background: rgba(255, 122, 136, 0.1);
+  color: var(--danger) !important;
+}
+
+.booking-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.booking-admin-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--text-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition: border-color 180ms ease, color 180ms ease, opacity 180ms ease;
+}
+
+.booking-admin-actions button:hover:not(:disabled) {
+  border-color: rgba(70, 216, 255, 0.34);
+  color: var(--text);
+}
+
+.booking-admin-actions button:disabled {
+  cursor: default;
+  opacity: 0.42;
 }
 
 .empty-bookings {
@@ -1248,6 +1371,7 @@ a.contact-card:hover {
   .hero-content,
   .about-grid,
   .zones-layout,
+  .promotion-block,
   .booking-layout,
   .contacts-layout,
   .footer-grid {
@@ -1409,6 +1533,14 @@ a.contact-card:hover {
   .booking-form,
   .booking-panel {
     padding: 20px;
+  }
+
+  .promotion-block {
+    padding: 20px;
+  }
+
+  .promotion-offers {
+    grid-template-columns: 1fr;
   }
 
   .admin-modal-panel {

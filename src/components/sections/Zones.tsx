@@ -12,7 +12,7 @@ export function Zones() {
         <SectionHeader
           eyebrow="Цены"
           title="Тарифы залов."
-          text="Действует ежедневно до 00:00 по времени Актау."
+          text="Два формата бронирования с понятной стоимостью для каждого зала."
         />
 
         <div className="zones-layout">
@@ -54,6 +54,24 @@ export function Zones() {
             })}
           </div>
         </div>
+
+        <Reveal className="promotion-block" delay={0.1}>
+          <div className="promotion-copy">
+            <span className="eyebrow">Акция 2+1</span>
+            <h3>Три часа по фиксированной цене.</h3>
+            <p>Предложение действует ежедневно до 00:00 по времени Актау.</p>
+          </div>
+          <div className="promotion-offers">
+            <div className="promotion-offer">
+              <span>Основной зал</span>
+              <strong>2+1 часа — 2000 ₸</strong>
+            </div>
+            <div className="promotion-offer">
+              <span>VIP-зал</span>
+              <strong>2+1 часа — 3500 ₸</strong>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -71,7 +71,10 @@ export default function App() {
           <Hero />
           <About />
           <Zones />
-          <Booking />
+          <Booking
+            isAdmin={adminState === "admin"}
+            onAdminSessionExpired={() => setAdminState("guest")}
+          />
           <Contacts />
         </main>
         <Footer />

@@ -6,7 +6,7 @@ import {
   MAX_ACTIVE_BOOKINGS_PER_PHONE,
   normalizePhone,
 } from "./bookingRules";
-import { BOOKING_ROOMS } from "./types";
+import { BOOKING_ROOMS, BOOKING_TARIFFS, BOOKING_STATUSES } from "./types";
 import type { BookingInput, BookingRepository, BookingRequest } from "./types";
 
 type BookingRow = {
@@ -16,11 +16,14 @@ type BookingRow = {
   booking_date: string;
   booking_time: string;
   room: string;
+  tariff_type: string;
+  price: number;
   comment: string | null;
+  status: string;
   created_at: string;
 };
 
-const SELECT_COLUMNS = "id,name,phone,booking_date,booking_time,room,comment,created_at";
+const SELECT_COLUMNS = "id,name,phone,booking_date,booking_time,room,tariff_type,price,comment,status,created_at";
 
 function mapRow(row: BookingRow): BookingRequest {
   return {
@@ -30,7 +33,14 @@ function mapRow(row: BookingRow): BookingRequest {
     date: row.booking_date,
     time: row.booking_time.slice(0, 5),
     room: isBookingRoom(row.room) ? row.room : BOOKING_ROOMS[0],
+    tariff: BOOKING_TARIFFS.includes(row.tariff_type as (typeof BOOKING_TARIFFS)[number])
+      ? row.tariff_type as (typeof BOOKING_TARIFFS)[number]
+      : BOOKING_TARIFFS[0],
+    price: Number(row.price),
     comment: row.comment ?? "",
+    status: BOOKING_STATUSES.includes(row.status as (typeof BOOKING_STATUSES)[number])
+      ? row.status as (typeof BOOKING_STATUSES)[number]
+      : BOOKING_STATUSES[0],
     createdAt: row.created_at,
   };
 }
@@ -91,7 +101,12 @@ export function createSupabaseBookingRepository(
           booking_date: input.date,
           booking_time: input.time,
           room: input.room,
+          tariff_type: input.tariff,
+          price: input.room === "VIP-зал"
+            ? input.tariff === "promotion" ? 3500 : 1500
+            : input.tariff === "promotion" ? 2000 : 1000,
           comment: input.comment || null,
+          status: "pending",
         })
         .select(SELECT_COLUMNS)
         .single<BookingRow>();
