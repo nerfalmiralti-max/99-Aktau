@@ -1,29 +1,61 @@
+"use client";
+
 import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export function AnimatedController() {
   const shouldReduceMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+  const shouldAnimate = !shouldReduceMotion && !isMobile;
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 680px)");
+    const updateMobileState = () => setIsMobile(mobileQuery.matches);
+
+    updateMobileState();
+    mobileQuery.addEventListener("change", updateMobileState);
+    return () => mobileQuery.removeEventListener("change", updateMobileState);
+  }, []);
 
   return (
     <motion.div
       className="controller-art"
       aria-hidden
-      initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.92, y: 24 }}
-      animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: [0, -14, 0] }}
+      initial={shouldAnimate ? { opacity: 0, scale: 0.92, y: 24 } : false}
+      animate={shouldAnimate ? { opacity: 1, scale: 1, y: [0, -14, 0] } : { opacity: 1 }}
       transition={
-        shouldReduceMotion
-          ? { duration: 0.2 }
-          : {
+        shouldAnimate
+          ? {
               opacity: { duration: 0.8, delay: 0.6 },
               scale: { duration: 0.8, delay: 0.6 },
               y: { duration: 5.8, repeat: Infinity, ease: "easeInOut" },
             }
+          : { duration: 0 }
       }
     >
+      <motion.span
+        className="controller-breathing-glow"
+        initial={false}
+        animate={
+          shouldAnimate
+            ? { scale: [0.95, 1.08, 0.95], opacity: [0.35, 0.55, 0.35] }
+            : { scale: 1, opacity: 0.42 }
+        }
+        transition={{
+          duration: shouldAnimate ? 8.4 : 0,
+          repeat: shouldAnimate ? Infinity : 0,
+          ease: "easeInOut",
+        }}
+      />
       <motion.svg
         viewBox="0 0 560 360"
         role="img"
-        animate={shouldReduceMotion ? undefined : { rotate: [-1.4, 1.6, -1.4] }}
-        transition={{ duration: 7.2, repeat: Infinity, ease: "easeInOut" }}
+        animate={shouldAnimate ? { rotate: [-1.4, 1.6, -1.4] } : { rotate: 0 }}
+        transition={{
+          duration: shouldAnimate ? 7.2 : 0,
+          repeat: shouldAnimate ? Infinity : 0,
+          ease: "easeInOut",
+        }}
       >
         <defs>
           <linearGradient id="controllerLine" x1="72" x2="488" y1="74" y2="312">

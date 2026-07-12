@@ -5,13 +5,14 @@ import { AnimatedController } from "../brand/AnimatedController";
 import { siteConfig } from "../../config/site.config";
 import { ButtonLink } from "../ui/Button";
 import { GradualBlur } from "../react-bits/GradualBlur";
+import { AuroraHeroBackground } from "./AuroraHeroBackground";
 
 const MotionLink = motion.create(Link);
 
 export function Hero() {
   return (
     <section className="hero-section" id="home" aria-label="Главный экран">
-      <div className="hero-image media-placeholder hero-media-placeholder" aria-hidden />
+      <AuroraHeroBackground />
       <div className="hero-overlay" />
       <div className="container hero-content">
         <div className="hero-copy">
