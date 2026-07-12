@@ -105,6 +105,7 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
                 <input
                   autoComplete="current-password"
                   autoFocus
+                  disabled={isSubmitting}
                   onChange={(event) => setPassword(event.target.value)}
                   required
                   type="password"
@@ -114,11 +115,12 @@ export function AdminLoginModal({ isOpen, onClose, onSuccess }: AdminLoginModalP
               <motion.button
                 className="button button-primary"
                 disabled={isSubmitting}
+                aria-busy={isSubmitting}
                 type="submit"
                 whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <span>{isSubmitting ? "Проверяем" : "Войти"}</span>
+                <span>{isSubmitting ? "Входим…" : "Войти"}</span>
                 {isSubmitting ? <Loader2 className="spin" aria-hidden size={18} /> : null}
               </motion.button>
               {message ? <div className="form-message form-message-error">{message}</div> : null}

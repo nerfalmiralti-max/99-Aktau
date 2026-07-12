@@ -1,7 +1,8 @@
 node_modules
 dist
-.env
-.env.local
+data/
+.env*
+!.env.example
 *.log
 dev-port.txt
 dev-server.log

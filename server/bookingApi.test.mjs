@@ -113,6 +113,7 @@ test("guest creates a promotion and can only restore that booking", async () => 
       tariffType: "promotion",
       price: 1,
       comment: "У окна",
+      privacyConsent: true,
     }),
   });
   assert.equal(response.status, 201);
@@ -129,6 +130,23 @@ test("guest creates a promotion and can only restore that booking", async () => 
 
   const anonymousMine = await api("/api/bookings/mine");
   assert.equal((await anonymousMine.json()).booking, null);
+});
+
+test("guest must confirm privacy consent before creating a booking", async () => {
+  const response = await api("/api/bookings", {
+    method: "POST",
+    body: JSON.stringify({
+      name: "Клиент",
+      phone: "+7 701 777 88 99",
+      date: "2099-12-31",
+      time: "18:00",
+      roomType: "Основной зал",
+      tariffType: "hourly",
+      comment: "",
+    }),
+  });
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).message, "Подтвердите согласие на обработку данных");
 });
 
 test("guest cannot list or change bookings through admin API", async () => {
@@ -190,6 +208,7 @@ test("VIP promotion uses 3500 and admin can delete and clear", async () => {
       room: "VIP-зал",
       tariff: "promotion",
       comment: "",
+      privacyConsent: true,
     }),
   });
   assert.equal((await created.json()).booking.price, 3500);

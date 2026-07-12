@@ -96,6 +96,9 @@ function validateBooking(payload) {
   if (!TARIFFS.has(tariff)) {
     throw new HttpError(400, "Выберите тариф");
   }
+  if (payload.privacyConsent !== true) {
+    throw new HttpError(400, "Подтвердите согласие на обработку данных");
+  }
 
   return {
     name,
@@ -190,7 +193,7 @@ export function createBookingHandler({ store, sessionSecret, secureCookies = tru
       if (method === "POST" && pathname === "/api/bookings") {
         const booking = await store.createBooking(validateBooking(await readJson(request)));
         const expiresAt = Date.now() + GUEST_SESSION_MS;
-        sendJson(response, 201, { message: "Заявка успешно сохранена", booking: guestBooking(booking) }, {
+        sendJson(response, 201, { message: "Заявка успешно отправлена", booking: guestBooking(booking) }, {
           "Set-Cookie": cookie(
             GUEST_COOKIE,
             guestToken(booking.id, sessionSecret, expiresAt),

@@ -84,23 +84,53 @@ function sessionCookie(token, maxAge) {
   return `${SESSION_COOKIE}=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secure}`;
 }
 
-function configuration() {
-  const password = process.env.ADMIN_PASSWORD;
-  const secret = process.env.ADMIN_SESSION_SECRET;
-  if (!password || password.length < 8 || !secret || secret.length < 32) {
+function logEnvironmentIssue(kind, name) {
+  console.error(`${kind} environment variable: ${name}`);
+}
+
+function readEnvironment(name) {
+  const value = process.env[name];
+  if (!value) {
+    logEnvironmentIssue("Missing", name);
     return null;
   }
+  return value;
+}
+
+function configurationForPath(pathname) {
+  const secret = readEnvironment("ADMIN_SESSION_SECRET");
+  if (!secret) {
+    return null;
+  }
+  if (secret.length < 32) {
+    logEnvironmentIssue("Invalid", "ADMIN_SESSION_SECRET");
+    return null;
+  }
+
+  if (pathname !== "/api/admin/login") {
+    return { secret };
+  }
+
+  const password = readEnvironment("ADMIN_PASSWORD");
+  if (!password) {
+    return null;
+  }
+  if (password.length < 8) {
+    logEnvironmentIssue("Invalid", "ADMIN_PASSWORD");
+    return null;
+  }
+
   return { password, secret };
 }
 
 export default async function handleAdminAuth(request, response) {
-  const config = configuration();
+  const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
+  const config = configurationForPath(pathname);
   if (!config) {
     sendJson(response, 503, { message: "Сервис авторизации временно недоступен" });
     return;
   }
 
-  const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
   try {
     if (request.method === "POST" && pathname === "/api/admin/login") {
       const payload = await readJson(request);

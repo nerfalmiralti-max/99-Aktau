@@ -40,6 +40,7 @@ const initialForm: BookingInput = {
   room: BOOKING_ROOMS[0],
   tariff: BOOKING_TARIFFS[0],
   comment: "",
+  privacyConsent: false,
 };
 
 function getPhoneDigits(value: string) {
@@ -129,6 +130,9 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
     if (!candidate.time) {
       nextErrors.time = "Выберите время.";
     }
+    if (!candidate.privacyConsent) {
+      nextErrors.privacyConsent = "Подтвердите согласие.";
+    }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -155,6 +159,7 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
       room: isBookingRoom(room) ? room : BOOKING_ROOMS[0],
       tariff: isBookingTariff(tariff) ? tariff : BOOKING_TARIFFS[0],
       comment: String(formData.get("comment") ?? ""),
+      privacyConsent: formData.get("privacyConsent") === "on",
     };
     setForm(candidate);
 
@@ -354,14 +359,27 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
                 />
               </label>
 
+              <label className="form-consent">
+                <input
+                  checked={form.privacyConsent}
+                  name="privacyConsent"
+                  onChange={(event) => updateField("privacyConsent", event.target.checked)}
+                  required
+                  type="checkbox"
+                />
+                <span>Согласен(на) на обработку данных для заявки</span>
+              </label>
+              {errors.privacyConsent ? <small className="form-consent-error">{errors.privacyConsent}</small> : null}
+
               <motion.button
                 className="button button-primary form-submit"
                 type="submit"
                 disabled={submitState === "loading"}
+                aria-busy={submitState === "loading"}
                 whileHover={{ y: -2, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <span>{submitState === "loading" ? "Сохраняем" : "Сохранить заявку"}</span>
+                <span>{submitState === "loading" ? "Отправляем…" : "Сохранить заявку"}</span>
                 {submitState === "loading"
                   ? <Loader2 className="spin" aria-hidden size={18} />
                   : <CalendarCheck aria-hidden size={18} />}
@@ -428,7 +446,7 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
                   ))}
                 </div>
               ) : (
-                <p className="empty-bookings">Заявок пока нет.</p>
+                <p className="empty-bookings">Новых заявок пока нет.</p>
               )
             ) : confirmation ? (
               <article className="booking-list-item booking-confirmation">
@@ -441,7 +459,7 @@ export function Booking({ isAdmin, onAdminSessionExpired }: BookingProps) {
                 {confirmation.comment ? <p>{confirmation.comment}</p> : null}
               </article>
             ) : (
-              <p className="empty-bookings">После отправки здесь появится ваша заявка.</p>
+              <p className="empty-bookings">У вас пока нет активной заявки.</p>
             )}
 
             {adminMessage ? <div className="form-message form-message-error">{adminMessage}</div> : null}

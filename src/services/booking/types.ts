@@ -34,9 +34,10 @@ export type BookingInput = {
   room: BookingRoom;
   tariff: BookingTariff;
   comment: string;
+  privacyConsent: boolean;
 };
 
-export type BookingRequest = BookingInput & {
+export type BookingRequest = Omit<BookingInput, "privacyConsent"> & {
   id: string;
   price: number;
   status: BookingStatus;

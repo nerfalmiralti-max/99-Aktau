@@ -245,6 +245,10 @@ img {
   opacity: 0.66;
 }
 
+.button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
 .loading-screen {
   position: fixed;
   z-index: 120;
@@ -1038,6 +1042,10 @@ label small {
   border: 0;
 }
 
+.admin-modal-panel .button-primary {
+  min-width: 150px;
+}
+
 .spin {
   animation: spin 850ms linear infinite;
 }
@@ -1055,6 +1063,7 @@ label small {
   padding: 14px 16px;
   border-radius: var(--radius-control);
   font-weight: 680;
+  animation: softMessageIn 220ms var(--ease-premium) both;
 }
 
 .form-message-success {
@@ -1067,6 +1076,38 @@ label small {
   border: 1px solid rgba(255, 122, 136, 0.28);
   background: rgba(255, 122, 136, 0.1);
   color: var(--danger);
+}
+
+.form-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.form-consent input {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+}
+
+.form-consent-error {
+  margin-top: -8px;
+}
+
+@keyframes softMessageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .booking-panel {
@@ -1124,6 +1165,10 @@ label small {
   gap: 5px;
   padding: 16px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.booking-confirmation {
+  animation: softMessageIn 240ms var(--ease-premium) both;
 }
 
 .booking-list-item strong {

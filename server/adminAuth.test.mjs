@@ -79,3 +79,40 @@ test("admin authentication creates, validates and clears a protected session", a
   assert.equal(logout.status, 200);
   assert.match(logout.headers.get("set-cookie"), /Max-Age=0/);
 });
+
+test("session route returns 401 without cookie even if ADMIN_PASSWORD is missing", async () => {
+  const previousPassword = process.env.ADMIN_PASSWORD;
+  delete process.env.ADMIN_PASSWORD;
+
+  try {
+    const session = await fetch(`${baseUrl}/api/admin/session`);
+    assert.equal(session.status, 401);
+    assert.equal((await session.json()).message, "Требуется вход администратора");
+  } finally {
+    if (previousPassword === undefined) {
+      delete process.env.ADMIN_PASSWORD;
+    } else {
+      process.env.ADMIN_PASSWORD = previousPassword;
+    }
+  }
+});
+
+test("login route returns 503 when ADMIN_PASSWORD is missing", async () => {
+  const previousPassword = process.env.ADMIN_PASSWORD;
+  delete process.env.ADMIN_PASSWORD;
+
+  try {
+    const login = await fetch(`${baseUrl}/api/admin/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: "whatever" }),
+    });
+    assert.equal(login.status, 503);
+  } finally {
+    if (previousPassword === undefined) {
+      delete process.env.ADMIN_PASSWORD;
+    } else {
+      process.env.ADMIN_PASSWORD = previousPassword;
+    }
+  }
+});

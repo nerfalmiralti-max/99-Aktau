@@ -3,6 +3,10 @@ import { createSupabaseBookingStore } from "./supabaseBookingStore.mjs";
 
 let bookingHandler;
 
+function logEnvironmentIssue(kind, name) {
+  console.error(`${kind} environment variable: ${name}`);
+}
+
 function configurationError(response) {
   const message = process.env.VERCEL_ENV === "development"
     ? "Не настроены переменные окружения"
@@ -17,6 +21,17 @@ export default function handleVercelRequest(request, response) {
   const sessionSecret = process.env.ADMIN_SESSION_SECRET;
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!sessionSecret) {
+    logEnvironmentIssue("Missing", "ADMIN_SESSION_SECRET");
+  } else if (sessionSecret.length < 32) {
+    logEnvironmentIssue("Invalid", "ADMIN_SESSION_SECRET");
+  }
+  if (!supabaseUrl) {
+    logEnvironmentIssue("Missing", "SUPABASE_URL");
+  }
+  if (!supabaseServiceRoleKey) {
+    logEnvironmentIssue("Missing", "SUPABASE_SERVICE_ROLE_KEY");
+  }
   if (
     !sessionSecret ||
     sessionSecret.length < 32 ||
