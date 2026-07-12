@@ -61,7 +61,7 @@ export function CardNav({
   const previousPathRef = useRef(pathname);
 
   const collapsedHeight = useCallback(
-    () => window.matchMedia("(max-width: 980px)").matches ? 66 : 76,
+    () => window.matchMedia("(max-width: 980px)").matches ? 66 : 70,
     [],
   );
 

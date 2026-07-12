@@ -65,6 +65,20 @@
   );
 }
 
+.aurora-layer-soft-light {
+  top: 6%;
+  left: 12%;
+  width: min(76vw, 1120px);
+  aspect-ratio: 1.65;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.045) 34%,
+    rgba(19, 17, 31, 0.025) 58%,
+    transparent 76%
+  );
+}
+
 .aurora-noise,
 .aurora-bottom-fade {
   position: absolute;
@@ -88,11 +102,19 @@
 
 .aurora-bottom-fade {
   z-index: 3;
-  background: linear-gradient(180deg, transparent 62%, rgba(9, 9, 11, 0.42) 82%, #09090b 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 58%,
+    rgba(9, 9, 11, 0.16) 72%,
+    rgba(9, 9, 11, 0.62) 90%,
+    #09090b 100%
+  );
 }
 
 .controller-art {
   display: grid;
+  translate: var(--controller-parallax-x, 0) var(--controller-parallax-y, 0);
+  transition: translate 180ms ease-out;
 }
 
 .controller-art > .controller-breathing-glow,
@@ -122,6 +144,9 @@
 .controller-art > svg {
   position: relative;
   z-index: 1;
+  width: 100%;
+  height: auto;
+  overflow: visible;
 }
 
 @media (max-width: 680px) {
@@ -151,6 +176,10 @@
     top: 28%;
     left: 3%;
     width: 106vw;
+  }
+
+  .aurora-layer-soft-light {
+    display: none;
   }
 
   .controller-breathing-glow {

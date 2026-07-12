@@ -1335,6 +1335,32 @@ a.contact-card:hover {
   font-size: 0.9rem;
 }
 
+@media (min-width: 981px) {
+  .footer-grid {
+    grid-template-columns: minmax(190px, 0.75fr) minmax(290px, 1fr) minmax(340px, 1.25fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .footer-brand,
+  .footer-nav {
+    padding-top: 4px;
+  }
+
+  .footer-contacts {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 10px 22px;
+    justify-content: end;
+    text-align: right;
+  }
+
+  .footer-contacts span {
+    grid-column: 1 / -1;
+    max-width: 410px;
+  }
+}
+
 .footer-nav a:hover,
 .footer-contacts a:hover {
   color: var(--accent-cyan);
