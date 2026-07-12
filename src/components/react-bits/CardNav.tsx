@@ -1,7 +1,20 @@
 "use client";
 
 import { gsap } from "gsap";
-import { CalendarCheck } from "lucide-react";
+import {
+  ArrowUpRight,
+  AtSign,
+  CalendarCheck,
+  ChevronRight,
+  Gamepad2,
+  Home,
+  Info,
+  MapPin,
+  MessageCircle,
+  Sparkles,
+  Tag,
+  type LucideIcon,
+} from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -43,6 +56,20 @@ type CardNavProps = {
   items: CardNavItem[];
 };
 
+function getMobileLinkIcon(link: CardNavLink): LucideIcon {
+  if ("href" in link) {
+    return link.label.toLowerCase().includes("whatsapp") ? MessageCircle : AtSign;
+  }
+  if (link.path === "/") return Home;
+  if (link.path.startsWith("/about")) return Info;
+  if (link.path.startsWith("/zones#promotion")) return Sparkles;
+  if (link.path.startsWith("/zones#tariffs")) return Tag;
+  if (link.path.startsWith("/zones")) return Gamepad2;
+  if (link.path.startsWith("/booking")) return CalendarCheck;
+  if (link.path.startsWith("/contacts")) return MapPin;
+  return ChevronRight;
+}
+
 export function CardNav({
   adminControl,
   className = "",
@@ -60,10 +87,12 @@ export function CardNav({
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const previousPathRef = useRef(pathname);
 
-  const collapsedHeight = useCallback(
-    () => window.matchMedia("(max-width: 980px)").matches ? 66 : 70,
-    [],
-  );
+  const collapsedHeight = useCallback(() => {
+    if (window.matchMedia("(max-width: 480px)").matches) {
+      return 58;
+    }
+    return window.matchMedia("(max-width: 980px)").matches ? 66 : 70;
+  }, []);
 
   const calculateHeight = useCallback(() => {
     const content = contentRef.current;
@@ -273,17 +302,21 @@ export function CardNav({
               <span className="card-nav-card-label">{item.label}</span>
               <div className="card-nav-links">
                 {item.links.map((link) => {
+                  const MobileIcon = getMobileLinkIcon(link);
                   if ("href" in link) {
                     return (
                       <a
                         aria-label={link.ariaLabel}
+                        className="card-nav-link"
                         href={link.href}
                         key={link.href}
                         onClick={() => closeMenu(true)}
                         rel="noreferrer"
                         target="_blank"
                       >
-                        {link.label}
+                        <MobileIcon aria-hidden className="card-nav-link-icon" size={16} />
+                        <span className="card-nav-link-label">{link.label}</span>
+                        <ArrowUpRight aria-hidden className="card-nav-link-arrow" size={16} />
                       </a>
                     );
                   }
@@ -294,14 +327,18 @@ export function CardNav({
                   return (
                     <NavLink
                       className={({ isActive }) => (
-                        isActive && (hashTarget ? hash === hashTarget : !hash) ? "is-active" : ""
+                        `card-nav-link ${
+                          isActive && (hashTarget ? hash === hashTarget : !hash) ? "is-active" : ""
+                        }`.trim()
                       )}
                       end={link.path === "/"}
                       key={link.path}
                       onClick={() => closeMenu(true)}
                       to={link.path}
                     >
-                      {link.label}
+                      <MobileIcon aria-hidden className="card-nav-link-icon" size={16} />
+                      <span className="card-nav-link-label">{link.label}</span>
+                      <ChevronRight aria-hidden className="card-nav-link-arrow" size={16} />
                     </NavLink>
                   );
                 })}
