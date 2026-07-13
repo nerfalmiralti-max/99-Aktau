@@ -69,24 +69,6 @@ export function AnimatedController() {
             <stop offset="0.45" stopColor="#7c5cff" />
             <stop offset="1" stopColor="#35d5ff" />
           </linearGradient>
-          <filter
-            id="controllerGlow"
-            x="-40%"
-            y="-40%"
-            width="180%"
-            height="180%"
-          >
-            <feGaussianBlur stdDeviation="7" result="blur" />
-            <feColorMatrix
-              in="blur"
-              type="matrix"
-              values="1 0 0 0 0.55 0 1 0 0 0.08 0 0 1 0 1 0 0 0 0.95 0"
-            />
-            <feMerge>
-              <feMergeNode />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
         </defs>
 
         <path
@@ -100,7 +82,6 @@ export function AnimatedController() {
         <path
           className="controller-line"
           d="M150 122c38-26 78-17 104 9 12 12 37 14 52 0 30-27 68-35 104-10 42 30 65 107 75 164"
-          filter="url(#controllerGlow)"
         />
         <rect
           className="controller-touch"

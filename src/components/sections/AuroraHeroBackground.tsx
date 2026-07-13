@@ -51,23 +51,13 @@ const auroraLayers: AuroraLayer[] = [
       opacity: [0.74, 0.81, 0.76, 0.79, 0.74],
     },
   },
-  {
-    className: "aurora-layer-soft-light",
-    duration: 60,
-    staticOpacity: 0.16,
-    animation: {
-      x: [0, 6, -5, 3, 0],
-      y: [0, -4, 7, 2, 0],
-      scale: [1, 1.02, 0.99, 1.01, 1],
-      opacity: [0.12, 0.18, 0.14, 0.17, 0.12],
-    },
-  },
 ];
 
 export function AuroraHeroBackground() {
   const backgroundRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
+  const [isPageVisible, setIsPageVisible] = useState(true);
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
   const sceneX = useSpring(pointerX, {
@@ -80,7 +70,17 @@ export function AuroraHeroBackground() {
     damping: 20,
     mass: 0.35,
   });
-  const shouldAnimate = !shouldReduceMotion && !isMobile;
+  const shouldAnimate = !shouldReduceMotion && !isMobile && isPageVisible;
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsPageVisible(document.visibilityState === "visible");
+    };
+
+    handleVisibilityChange();
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
 
   useEffect(() => {
     const mobileQuery = window.matchMedia("(max-width: 680px)");
@@ -111,15 +111,15 @@ export function AuroraHeroBackground() {
       const bounds = scene.getBoundingClientRect();
       const normalizedX = (event.clientX - bounds.left) / bounds.width - 0.5;
       const normalizedY = (event.clientY - bounds.top) / bounds.height - 0.5;
-      pointerX.set(normalizedX * 12);
-      pointerY.set(normalizedY * 8);
+      pointerX.set(normalizedX * 8);
+      pointerY.set(normalizedY * 5);
       scene.style.setProperty(
         "--controller-parallax-x",
-        `${normalizedX * 8}px`,
+        `${normalizedX * 4}px`,
       );
       scene.style.setProperty(
         "--controller-parallax-y",
-        `${normalizedY * 6}px`,
+        `${normalizedY * 3}px`,
       );
     };
 

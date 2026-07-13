@@ -85,6 +85,8 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   fillOpacity = 0.5,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<number | null>(null);
+  const pointerRef = useRef<{ x: number; y: number } | null>(null);
 
   const getCenterOfElement = useCallback((el: HTMLElement) => {
     const { width, height } = el.getBoundingClientRect();
@@ -117,16 +119,32 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
     const card = cardRef.current;
     if (!card || e.pointerType !== 'mouse') return;
 
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    pointerRef.current = { x: e.clientX, y: e.clientY };
+    if (frameRef.current !== null) return;
 
-    const edge = getEdgeProximity(card, x, y);
-    const angle = getCursorAngle(card, x, y);
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null;
+      const currentCard = cardRef.current;
+      const pointer = pointerRef.current;
+      if (!currentCard || !pointer) return;
 
-    card.style.setProperty('--edge-proximity', `${(edge * 100).toFixed(3)}`);
-    card.style.setProperty('--cursor-angle', `${angle.toFixed(3)}deg`);
+      const rect = currentCard.getBoundingClientRect();
+      const x = pointer.x - rect.left;
+      const y = pointer.y - rect.top;
+
+      const edge = getEdgeProximity(currentCard, x, y);
+      const angle = getCursorAngle(currentCard, x, y);
+
+      currentCard.style.setProperty('--edge-proximity', `${(edge * 100).toFixed(3)}`);
+      currentCard.style.setProperty('--cursor-angle', `${angle.toFixed(3)}deg`);
+    });
   }, [getEdgeProximity, getCursorAngle]);
+
+  useEffect(() => () => {
+    if (frameRef.current !== null) {
+      cancelAnimationFrame(frameRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     if (!animated || !cardRef.current) return;

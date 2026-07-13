@@ -1,6 +1,5 @@
 "use client";
 
-import { gsap } from "gsap";
 import {
   ArrowUpRight,
   AtSign,
@@ -15,15 +14,7 @@ import {
   Tag,
   type LucideIcon,
 } from "lucide-react";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { BrandLogo } from "../brand/BrandLogo";
 import "./CardNav.css";
@@ -51,7 +42,6 @@ export type CardNavItem = {
 type CardNavProps = {
   adminControl: ReactNode;
   className?: string;
-  ease?: string;
   isScrolled: boolean;
   items: CardNavItem[];
 };
@@ -73,7 +63,6 @@ function getMobileLinkIcon(link: CardNavLink): LucideIcon {
 export function CardNav({
   adminControl,
   className = "",
-  ease = "power3.out",
   isScrolled,
   items,
 }: CardNavProps) {
@@ -82,96 +71,26 @@ export function CardNav({
   const contentId = useId();
   const navRef = useRef<HTMLElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
-  const cardsRef = useRef<HTMLElement[]>([]);
-  const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const previousPathRef = useRef(pathname);
 
-  const collapsedHeight = useCallback(() => {
-    if (window.matchMedia("(max-width: 480px)").matches) {
-      return 58;
-    }
-    return window.matchMedia("(max-width: 980px)").matches ? 66 : 70;
-  }, []);
-
-  const calculateHeight = useCallback(() => {
-    const content = contentRef.current;
-    if (!content) {
-      return collapsedHeight();
-    }
-
-    const previousPosition = content.style.position;
-    const previousVisibility = content.style.visibility;
-    const previousPointerEvents = content.style.pointerEvents;
-    content.style.position = "static";
-    content.style.visibility = "visible";
-    content.style.pointerEvents = "none";
-    const height = collapsedHeight() + content.offsetHeight;
-    content.style.position = previousPosition;
-    content.style.visibility = previousVisibility;
-    content.style.pointerEvents = previousPointerEvents;
-    return height;
-  }, [collapsedHeight]);
-
-  const createTimeline = useCallback(() => {
-    const nav = navRef.current;
-    if (!nav) {
-      return null;
-    }
-
-    gsap.set(nav, { height: collapsedHeight(), overflow: "hidden" });
-    gsap.set(cardsRef.current, { opacity: 0, y: 30 });
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const timeline = gsap.timeline({ paused: true });
-    timeline.to(nav, {
-      duration: reduceMotion ? 0 : 0.42,
-      ease,
-      height: calculateHeight,
-    });
-    timeline.to(
-      cardsRef.current,
-      {
-        duration: reduceMotion ? 0 : 0.38,
-        ease,
-        opacity: 1,
-        stagger: reduceMotion ? 0 : 0.07,
-        y: 0,
-      },
-      "-=0.16",
-    );
-    return timeline;
-  }, [calculateHeight, collapsedHeight, ease]);
-
-  useLayoutEffect(() => {
-    const timeline = createTimeline();
-    timelineRef.current = timeline;
-
-    return () => {
-      timeline?.kill();
-      timelineRef.current = null;
-    };
-  }, [createTimeline, items]);
-
   const closeMenu = useCallback((restoreFocus = true) => {
-    const timeline = timelineRef.current;
-    if (!timeline || !isExpanded) {
+    if (!isExpanded) {
       if (restoreFocus) menuButtonRef.current?.focus();
       return;
     }
-    timeline.eventCallback("onReverseComplete", () => {
-      setIsExpanded(false);
-      if (restoreFocus) {
-        requestAnimationFrame(() => menuButtonRef.current?.focus());
-      }
-    });
-    timeline.reverse();
+    setIsExpanded(false);
+    if (restoreFocus) {
+      requestAnimationFrame(() => menuButtonRef.current?.focus());
+    }
   }, [isExpanded]);
 
   useEffect(() => {
     if (previousPathRef.current !== pathname) {
       previousPathRef.current = pathname;
-      if (isExpanded) closeMenu(true);
+      if (isExpanded) {
+        const frame = requestAnimationFrame(() => closeMenu(true));
+        return () => cancelAnimationFrame(frame);
+      }
     }
   }, [closeMenu, isExpanded, pathname]);
 
@@ -200,19 +119,6 @@ export function CardNav({
   }, [isExpanded]);
 
   useEffect(() => {
-    const handleResize = () => {
-      const timeline = timelineRef.current;
-      if (!timeline) {
-        return;
-      }
-      timeline.kill();
-      const replacement = createTimeline();
-      if (replacement && isExpanded) {
-        replacement.progress(1);
-        gsap.set(navRef.current, { height: calculateHeight() });
-      }
-      timelineRef.current = replacement;
-    };
     const handlePointerDown = (event: PointerEvent) => {
       if (isExpanded && navRef.current && !navRef.current.contains(event.target as Node)) {
         closeMenu(true);
@@ -224,28 +130,20 @@ export function CardNav({
       }
     };
 
-    window.addEventListener("resize", handleResize);
     document.addEventListener("pointerdown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener("resize", handleResize);
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [calculateHeight, closeMenu, createTimeline, isExpanded]);
+  }, [closeMenu, isExpanded]);
 
   const toggleMenu = () => {
-    const timeline = timelineRef.current;
-    if (!timeline) {
-      return;
-    }
     if (isExpanded) {
       closeMenu(true);
       return;
     }
-    timeline.eventCallback("onReverseComplete", null);
     setIsExpanded(true);
-    timeline.play(0);
   };
 
   return (
@@ -288,15 +186,11 @@ export function CardNav({
           className="card-nav-content"
           id={contentId}
           inert={!isExpanded}
-          ref={contentRef}
         >
           {items.map((item, index) => (
             <section
               className="card-nav-card"
               key={item.label}
-              ref={(element) => {
-                if (element) cardsRef.current[index] = element;
-              }}
               style={{ backgroundColor: item.bgColor, color: item.textColor }}
             >
               <span className="card-nav-card-label">{item.label}</span>

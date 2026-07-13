@@ -152,6 +152,11 @@
   .border-glow-card > .edge-light {
     display: none;
   }
+
+  .premium-border-glow {
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(8px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

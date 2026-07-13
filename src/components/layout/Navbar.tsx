@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2, LogOut, ShieldCheck } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { siteConfig } from "../../config/site.config";
 import { createInstagramHref, createWhatsAppHref } from "../../utils/linkUtils";
 import { CardNav, type CardNavItem } from "../react-bits/CardNav";
@@ -81,12 +81,33 @@ const cardNavItems: CardNavItem[] = [
 
 export function Navbar({ adminState, onAdminLogin, onAdminLogout }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const isScrolledRef = useRef(false);
+  const frameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 24);
+    const syncScrolledState = () => {
+      frameRef.current = null;
+      const nextIsScrolled = window.scrollY > 24;
+      if (nextIsScrolled !== isScrolledRef.current) {
+        isScrolledRef.current = nextIsScrolled;
+        setIsScrolled(nextIsScrolled);
+      }
+    };
+
+    const handleScroll = () => {
+      if (frameRef.current === null) {
+        frameRef.current = requestAnimationFrame(syncScrolledState);
+      }
+    };
+
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      if (frameRef.current !== null) {
+        cancelAnimationFrame(frameRef.current);
+      }
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (

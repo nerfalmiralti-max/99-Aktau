@@ -11,7 +11,7 @@
   position: relative;
   display: block;
   height: var(--nav-height);
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid transparent;
   border-radius: 26px;
   background: rgba(9, 9, 13, 0.46);
@@ -19,9 +19,7 @@
   transition:
     background 220ms ease,
     border-color 220ms ease,
-    box-shadow 220ms ease,
-    backdrop-filter 220ms ease;
-  will-change: height;
+    box-shadow 220ms ease;
 }
 
 .card-nav.is-scrolled,
@@ -109,20 +107,55 @@
 
 .card-nav-content {
   position: absolute;
-  top: var(--nav-height);
+  top: calc(var(--nav-height) + 10px);
   right: 0;
   left: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  padding: 8px 10px 10px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  background: rgba(9, 9, 13, 0.86);
+  box-shadow: 0 22px 72px rgba(0, 0, 0, 0.38);
+  opacity: 0;
+  transform: translate3d(0, -8px, 0);
   visibility: hidden;
   pointer-events: none;
+  transition:
+    opacity 260ms var(--ease-premium),
+    transform 260ms var(--ease-premium),
+    visibility 0s linear 260ms;
+  backdrop-filter: blur(18px);
 }
 
 .card-nav.is-open .card-nav-content {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
   visibility: visible;
   pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.card-nav-card {
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  transition:
+    opacity 240ms var(--ease-premium),
+    transform 240ms var(--ease-premium);
+}
+
+.card-nav.is-open .card-nav-card {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.card-nav.is-open .card-nav-card:nth-child(2) {
+  transition-delay: 40ms;
+}
+
+.card-nav.is-open .card-nav-card:nth-child(3) {
+  transition-delay: 80ms;
 }
 
 .card-nav-card {
@@ -203,7 +236,7 @@
   .card-nav.is-open,
   .card-nav:focus-within {
     box-shadow: 0 18px 52px rgba(0, 0, 0, 0.34);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(10px);
   }
 
   .card-nav-top {
@@ -223,7 +256,7 @@
   }
 
   .card-nav-content {
-    top: 70px;
+    top: 80px;
   }
 }
 
@@ -235,6 +268,13 @@
 
   .card-nav {
     border-radius: 24px;
+  }
+
+  .card-nav.is-scrolled,
+  .card-nav.is-open,
+  .card-nav:focus-within {
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
   }
 
   .card-nav-top {
@@ -257,6 +297,7 @@
   }
 
   .card-nav-content {
+    top: calc(var(--nav-height) + 8px);
     grid-template-columns: 1fr;
     gap: 8px;
     max-height: calc(
@@ -265,6 +306,7 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 8px 10px max(10px, env(safe-area-inset-bottom));
+    backdrop-filter: blur(10px);
   }
 
   .card-nav-card {
@@ -320,7 +362,7 @@
   }
 
   .card-nav-content {
-    top: 58px;
+    top: 66px;
     gap: 8px;
     max-height: calc(100svh - 72px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     padding: 8px 8px max(8px, env(safe-area-inset-bottom));
@@ -358,7 +400,7 @@
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.055);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(14px);
+    backdrop-filter: blur(8px);
     color: rgba(247, 244, 255, 0.86);
     transition:
       color 180ms ease,
@@ -405,7 +447,7 @@
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.055);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(14px);
+    backdrop-filter: blur(8px);
   }
 }
 

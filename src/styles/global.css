@@ -1809,8 +1809,8 @@ a.contact-card:hover {
   .admin-booking-glow .booking-list-item {
     border-color: rgba(201, 108, 255, 0.16);
     background: rgba(255, 255, 255, 0.055);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
-    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(8px);
   }
 
   .zone-card-glow .zone-card,
@@ -1818,8 +1818,8 @@ a.contact-card:hover {
   .promotion-glow .promotion-block {
     border: 1px solid rgba(201, 108, 255, 0.16);
     background: rgba(255, 255, 255, 0.055);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
-    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(8px);
   }
 
   .feature-card,

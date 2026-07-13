@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowDown, ArrowRight, CalendarCheck, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatedController } from "../brand/AnimatedController";
 import { siteConfig } from "../../config/site.config";
@@ -10,6 +11,19 @@ import { AuroraHeroBackground } from "./AuroraHeroBackground";
 const MotionLink = motion.create(Link);
 
 export function Hero() {
+  const shouldReduceMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+  const shouldAnimateScrollCue = !shouldReduceMotion && !isMobile;
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const updateMobileState = () => setIsMobile(mobileQuery.matches);
+
+    updateMobileState();
+    mobileQuery.addEventListener("change", updateMobileState);
+    return () => mobileQuery.removeEventListener("change", updateMobileState);
+  }, []);
+
   return (
     <section className="hero-section" id="home" aria-label="Главный экран">
       <AuroraHeroBackground />
@@ -63,8 +77,12 @@ export function Hero() {
         to="/about"
         aria-label="Перейти к разделу о клубе"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 8, 0] }}
-        transition={{ opacity: { delay: 1.1 }, y: { duration: 2.2, repeat: Infinity } }}
+        animate={shouldAnimateScrollCue ? { opacity: 1, y: [0, 8, 0] } : { opacity: 1, y: 0 }}
+        transition={
+          shouldAnimateScrollCue
+            ? { opacity: { delay: 1.1 }, y: { duration: 2.2, repeat: Infinity } }
+            : { duration: 0.2 }
+        }
       >
         <ArrowDown aria-hidden size={18} />
       </MotionLink>
