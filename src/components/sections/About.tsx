@@ -20,8 +20,8 @@ export function About() {
             <Reveal delay={index * 0.08} key={card.title}>
               <motion.article
                 className="feature-card"
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
+                whileHover={{ y: -2 }}
+                transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
               >
                 <span className="feature-icon">
                   <Icon aria-hidden size={22} />

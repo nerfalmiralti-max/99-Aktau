@@ -1,17 +1,18 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AdminLoginModal } from "./components/admin/AdminLoginModal";
 import { Footer } from "./components/layout/Footer";
 import { LoadingScreen } from "./components/layout/LoadingScreen";
 import { Navbar } from "./components/layout/Navbar";
 import { PageMetadata } from "./components/layout/PageMetadata";
-import { About } from "./components/sections/About";
-import { Booking } from "./components/sections/Booking";
-import { Contacts } from "./components/sections/Contacts";
 import { Hero } from "./components/sections/Hero";
-import { Zones } from "./components/sections/Zones";
 import { adminApi } from "./services/adminApi";
+
+const About = lazy(() => import("./components/sections/About").then(({ About }) => ({ default: About })));
+const Booking = lazy(() => import("./components/sections/Booking").then(({ Booking }) => ({ default: Booking })));
+const Contacts = lazy(() => import("./components/sections/Contacts").then(({ Contacts }) => ({ default: Contacts })));
+const Zones = lazy(() => import("./components/sections/Zones").then(({ Zones }) => ({ default: Zones })));
 
 type AdminState = "loading" | "guest" | "admin";
 
@@ -32,7 +33,7 @@ export default function App() {
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setIsLoading(false), 900);
+    const timer = window.setTimeout(() => setIsLoading(false), 520);
 
     return () => window.clearTimeout(timer);
   }, []);
@@ -71,37 +72,34 @@ export default function App() {
       <PageMetadata />
       <ScrollToTop />
       <AnimatePresence>{isLoading ? <LoadingScreen /> : null}</AnimatePresence>
-      <motion.div
-        className="app-shell"
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      >
+      <div className="app-shell">
         <Navbar
           adminState={adminState}
           onAdminLogin={() => setIsAdminLoginOpen(true)}
           onAdminLogout={handleAdminLogout}
         />
         <main className={location.pathname === "/" ? undefined : "inner-page"}>
-          <Routes>
-            <Route path="/" element={<Hero />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/zones" element={<Zones />} />
-            <Route
-              path="/booking"
-              element={(
-                <Booking
-                  isAdmin={adminState === "admin"}
-                  onAdminSessionExpired={() => setAdminState("guest")}
-                />
-              )}
-            />
-            <Route path="/contacts" element={<Contacts />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<Hero />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/zones" element={<Zones />} />
+              <Route
+                path="/booking"
+                element={(
+                  <Booking
+                    isAdmin={adminState === "admin"}
+                    onAdminSessionExpired={() => setAdminState("guest")}
+                  />
+                )}
+              />
+              <Route path="/contacts" element={<Contacts />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </main>
         <Footer />
-      </motion.div>
+      </div>
       <AdminLoginModal
         isOpen={isAdminLoginOpen}
         onClose={() => setIsAdminLoginOpen(false)}

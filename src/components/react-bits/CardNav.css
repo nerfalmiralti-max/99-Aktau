@@ -65,7 +65,7 @@
 
 .card-nav-menu-button:focus-visible,
 .card-nav-links > a:focus-visible {
-  outline: 2px solid rgba(201, 108, 255, 0.82);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
@@ -281,10 +281,6 @@
     grid-row: 1;
   }
 
-  .card-nav-cta {
-    display: none;
-  }
-
   .card-nav-content {
     top: calc(var(--nav-height) + 8px);
     grid-template-columns: 1fr;
@@ -341,8 +337,8 @@
   }
 
   .card-nav-menu-button {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     gap: 5px;
   }
 
@@ -383,7 +379,7 @@
     display: grid;
     grid-template-columns: 30px minmax(0, 1fr) auto;
     align-items: center;
-    min-height: 46px;
+    min-height: 48px;
     padding: 0 12px;
     border-color: rgba(201, 108, 255, 0.16);
     border-radius: 16px;

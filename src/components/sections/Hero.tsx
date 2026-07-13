@@ -32,33 +32,33 @@ export function Hero() {
         <div className="hero-copy">
           <motion.span
             className="eyebrow hero-eyebrow"
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.2 }}
+            transition={{ duration: 0.44, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
           >
             <MapPin aria-hidden size={15} />
             {siteConfig.brand.city}
           </motion.span>
           <motion.h1
-            initial={{ opacity: 0, y: 32 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.52, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
           >
             {siteConfig.brand.name}
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 26 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.52, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             Пространство для спокойной игры, приватного отдыха и встреч, где все
             продумано для комфортного вечера.
           </motion.p>
           <motion.div
             className="hero-actions"
-            initial={{ opacity: 0, y: 22 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.58 }}
+            transition={{ duration: 0.48, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
             <ButtonLink to="/booking" icon={<CalendarCheck aria-hidden size={18} />}>
               Забронировать
@@ -80,7 +80,7 @@ export function Hero() {
         animate={shouldAnimateScrollCue ? { opacity: 1, y: [0, 8, 0] } : { opacity: 1, y: 0 }}
         transition={
           shouldAnimateScrollCue
-            ? { opacity: { delay: 1.1 }, y: { duration: 2.2, repeat: Infinity } }
+            ? { opacity: { delay: 0.62 }, y: { duration: 2.2, repeat: Infinity } }
             : { duration: 0.2 }
         }
       >
