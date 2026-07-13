@@ -132,9 +132,9 @@
   pointer-events: none;
   background: radial-gradient(
     ellipse at center,
-    rgba(168, 85, 247, 0.3) 0%,
-    rgba(192, 38, 211, 0.11) 38%,
-    rgba(56, 189, 248, 0.045) 58%,
+    rgba(168, 85, 247, 0.48) 0%,
+    rgba(192, 38, 211, 0.19) 38%,
+    rgba(56, 189, 248, 0.08) 58%,
     transparent 74%
   );
   filter: blur(24px);

@@ -16,7 +16,7 @@
   --radius-card: 8px;
   --radius-control: 18px;
   --radius-pill: 999px;
-  --nav-height: 68px;
+  --nav-height: 76px;
   --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -161,10 +161,10 @@ img {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 54px;
+  min-height: 52px;
   border: 1px solid transparent;
   border-radius: var(--radius-pill);
-  padding: 0 24px;
+  padding: 0 22px;
   overflow: hidden;
   cursor: pointer;
   font-weight: 780;
@@ -173,8 +173,7 @@ img {
     border-color 180ms ease,
     background 180ms ease,
     color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms var(--ease-premium);
+    box-shadow 180ms ease;
 }
 
 .button::after {
@@ -202,26 +201,18 @@ img {
 }
 
 .button-primary {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(232, 228, 238, 0.92));
-  color: #07070a;
-  box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.96),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+  background: linear-gradient(135deg, var(--accent), var(--accent-cyan));
+  color: #08070d;
+  box-shadow: 0 18px 52px rgba(140, 77, 255, 0.32);
 }
 
 .button-primary:hover {
-  box-shadow:
-    0 20px 52px rgba(0, 0, 0, 0.34),
-    0 0 0 1px rgba(201, 108, 255, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.14);
+  box-shadow: 0 20px 62px rgba(70, 216, 255, 0.26);
 }
 
 .button-secondary {
   border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.075);
   color: var(--text);
   backdrop-filter: blur(18px);
 }
@@ -560,7 +551,7 @@ img {
 .hero-section {
   position: relative;
   display: grid;
-  min-height: 86svh;
+  min-height: 84svh;
   overflow: hidden;
   align-items: center;
   scroll-margin-top: 0;
@@ -617,46 +608,36 @@ img {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 0.94fr) minmax(410px, 0.86fr);
-  gap: clamp(28px, 4vw, 64px);
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.72fr);
+  gap: 44px;
   align-items: center;
-  padding: calc(var(--nav-height) + 70px) 0 66px;
+  padding: calc(var(--nav-height) + 58px) 0 54px;
 }
 
 .hero-copy {
-  max-width: 720px;
+  max-width: 830px;
 }
 
 .hero-eyebrow {
   color: var(--accent-cyan);
-  margin-bottom: 16px;
-  line-height: 1;
-}
-
-.hero-eyebrow svg {
-  flex: 0 0 auto;
-  overflow: visible;
-  transform: translateY(-0.5px);
 }
 
 .hero-content h1 {
-  max-width: 780px;
-  font-size: clamp(4.8rem, 9vw, 7.05rem);
-  line-height: 0.9;
+  max-width: 860px;
+  font-size: 7.2rem;
+  line-height: 0.88;
 }
 
 .hero-content p {
   color: rgba(247, 244, 255, 0.84);
-  font-size: 1.18rem;
-  line-height: 1.62;
-  max-width: 560px;
+  font-size: 1.2rem;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 30px;
+  margin-top: 34px;
 }
 
 .hero-scroll {
@@ -680,9 +661,9 @@ img {
 
 .controller-art {
   justify-self: end;
-  width: min(560px, 100%);
+  width: min(460px, 100%);
   pointer-events: none;
-  filter: drop-shadow(0 30px 72px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 28px 66px rgba(0, 0, 0, 0.52));
 }
 
 .controller-art svg {
@@ -691,140 +672,68 @@ img {
   overflow: visible;
 }
 
-.controller-floor-shadow {
-  fill: rgba(0, 0, 0, 0.42);
-}
-
-.controller-grip {
-  fill: url("#dsGrip");
-  stroke: rgba(255, 255, 255, 0.06);
-  stroke-width: 1.5;
-}
-
-.controller-grip.left {
-  opacity: 0.95;
-}
-
-.controller-grip.right {
-  opacity: 0.98;
+.controller-shadow {
+  fill: rgba(0, 0, 0, 0.5);
+  transform: translateY(12px);
 }
 
 .controller-shell {
-  fill: url("#dsShell");
-  stroke: rgba(255, 255, 255, 0.12);
-  stroke-width: 1.8;
-}
-
-.controller-faceplate {
-  fill: url("#dsFace");
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 1.5;
-}
-
-.controller-top-rim,
-.controller-rim-light {
-  fill: none;
-  stroke: url("#dsRim");
-  stroke-linecap: round;
-}
-
-.controller-top-rim {
-  stroke-width: 2.2;
-  opacity: 0.42;
-}
-
-.controller-rim-light {
-  stroke-width: 1.4;
-  opacity: 0.52;
-}
-
-.controller-center-seam {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-linecap: round;
-  stroke-width: 1.2;
-}
-
-.controller-touch {
-  fill: rgba(255, 255, 255, 0.045);
-  stroke: rgba(255, 255, 255, 0.11);
-  stroke-width: 1.4;
-}
-
-.controller-touch-highlight,
-.controller-light,
-.controller-bottom-highlight {
-  fill: none;
-  stroke-linecap: round;
-}
-
-.controller-touch-highlight {
-  stroke: rgba(255, 255, 255, 0.14);
+  fill: rgba(11, 10, 16, 0.76);
+  stroke: rgba(255, 255, 255, 0.22);
   stroke-width: 2;
 }
 
-.controller-light {
-  stroke: rgba(168, 85, 247, 0.58);
-  stroke-width: 4;
-}
-
-.controller-bottom-highlight {
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 1.5;
-}
-
-.controller-dpad rect,
-.controller-action-buttons circle {
-  fill: url("#dsButton");
-  stroke: rgba(255, 255, 255, 0.09);
-  stroke-width: 1.3;
-}
-
-.controller-dpad rect {
-  opacity: 0.9;
-}
-
-.controller-symbol {
+.controller-line {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.42);
+  stroke: url(#controllerLine);
   stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.2;
+  stroke-width: 5;
 }
 
-.controller-symbol:first-of-type {
-  fill: none;
-}
-
-.controller-stick-base {
-  fill: rgba(6, 6, 9, 0.92);
-  stroke: rgba(168, 85, 247, 0.2);
+.controller-touch {
+  fill: rgba(255, 255, 255, 0.055);
+  stroke: rgba(255, 255, 255, 0.16);
   stroke-width: 2;
 }
 
 .controller-stick {
-  fill: url("#dsStick");
-  stroke: rgba(255, 255, 255, 0.1);
-  stroke-width: 1.5;
-}
-
-.controller-stick-cap {
-  fill: rgba(3, 3, 5, 0.88);
-  stroke: rgba(255, 255, 255, 0.08);
-  stroke-width: 1;
-}
-
-.controller-speaker circle {
-  fill: rgba(255, 255, 255, 0.16);
-}
-
-.controller-ps-mark {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.42);
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  fill: rgba(3, 3, 6, 0.84);
+  stroke: rgba(201, 108, 255, 0.58);
   stroke-width: 4;
-  opacity: 0.74;
+}
+
+.controller-cross,
+.controller-light {
+  fill: none;
+  stroke: rgba(247, 244, 255, 0.74);
+  stroke-linecap: round;
+  stroke-width: 12;
+}
+
+.controller-light {
+  stroke: var(--accent);
+  stroke-width: 5;
+}
+
+.controller-button {
+  fill: transparent;
+  stroke-width: 5;
+}
+
+.controller-button.cyan {
+  stroke: var(--accent-cyan);
+}
+
+.controller-button.magenta {
+  stroke: #e879ff;
+}
+
+.controller-button.pink {
+  stroke: #ff4f9d;
+}
+
+.controller-button.blue {
+  stroke: #8db7ff;
 }
 
 .about-section {
@@ -1607,13 +1516,13 @@ a.contact-card:hover {
   }
 
   .hero-content {
-    gap: 30px;
+    gap: 24px;
   }
 
   .controller-art {
-    justify-self: center;
-    width: min(500px, 86%);
-    margin-top: -12px;
+    justify-self: start;
+    width: min(360px, 82%);
+    margin-top: -10px;
   }
 
   .section-header h1 {
@@ -1692,7 +1601,7 @@ a.contact-card:hover {
   }
 
   .hero-section {
-    min-height: 84svh;
+    min-height: 86svh;
     align-items: end;
   }
 
@@ -1707,14 +1616,13 @@ a.contact-card:hover {
   }
 
   .hero-content {
-    gap: 18px;
-    padding: 104px 0 58px;
+    padding: 108px 0 72px;
   }
 
   .hero-copy {
     position: relative;
     z-index: 2;
-    padding-bottom: 0;
+    padding-bottom: 172px;
   }
 
   .hero-content h1 {
@@ -1727,13 +1635,11 @@ a.contact-card:hover {
   }
 
   .controller-art {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    justify-self: end;
-    width: min(340px, 88%);
-    margin-top: 18px;
-    opacity: 0.82;
+    position: absolute;
+    right: 0;
+    bottom: 36px;
+    width: min(286px, 82%);
+    opacity: 0.72;
   }
 
   .hero-actions,
@@ -1852,16 +1758,16 @@ a.contact-card:hover {
   }
 
   .hero-section {
-    min-height: 82svh;
+    min-height: 78svh;
   }
 
   .hero-content {
     gap: 12px;
-    padding: 84px 0 48px;
+    padding: 76px 0 46px;
   }
 
   .hero-copy {
-    padding-bottom: 0;
+    padding-bottom: 124px;
   }
 
   .hero-content p {
@@ -1874,11 +1780,10 @@ a.contact-card:hover {
   }
 
   .controller-art {
-    right: auto;
-    bottom: auto;
-    width: min(292px, 88%);
-    margin-top: 16px;
-    opacity: 0.82;
+    right: 0;
+    bottom: 64px;
+    width: min(246px, 76%);
+    opacity: 0.76;
   }
 
   .button,
@@ -1980,12 +1885,12 @@ a.contact-card:hover {
 
 @media (max-width: 360px) {
   .hero-copy {
-    padding-bottom: 0;
+    padding-bottom: 112px;
   }
 
   .controller-art {
-    width: min(258px, 86%);
-    margin-top: 14px;
+    bottom: 58px;
+    width: min(226px, 74%);
   }
 }
 

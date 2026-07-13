@@ -171,6 +171,14 @@ export function CardNav({
             <BrandLogo />
           </Link>
 
+          <Link
+            className="button button-primary card-nav-cta"
+            onClick={() => closeMenu(true)}
+            to="/booking"
+          >
+            <span>Забронировать</span>
+            <CalendarCheck aria-hidden size={16} />
+          </Link>
         </div>
 
         <div

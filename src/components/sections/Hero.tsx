@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, CalendarCheck, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, CalendarCheck, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatedController } from "../brand/AnimatedController";
@@ -51,8 +51,8 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            Пространство для спокойной игры, приватного отдыха и встреч, где каждая
-            сессия проходит в комфортной атмосфере.
+            Премиальный gaming lounge для спокойной консольной игры, приватного отдыха
+            и вечерних встреч в Актау.
           </motion.p>
           <motion.div
             className="hero-actions"
@@ -62,6 +62,9 @@ export function Hero() {
           >
             <ButtonLink to="/booking" icon={<CalendarCheck aria-hidden size={18} />}>
               Забронировать
+            </ButtonLink>
+            <ButtonLink to="/zones" variant="secondary" icon={<ArrowRight aria-hidden size={18} />}>
+              Игровые зоны
             </ButtonLink>
           </motion.div>
         </div>
