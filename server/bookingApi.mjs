@@ -1,6 +1,12 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { hasValidAdminSession } from "./adminAuth.mjs";
 import { BookingConflictError } from "./bookingErrors.mjs";
+import {
+  applyCorsHeaders,
+  createRateLimiter,
+  setSecurityHeaders,
+  verifyTrustedOrigin,
+} from "./security.mjs";
 
 const GUEST_COOKIE = "aktau_guest_booking";
 const GUEST_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
@@ -8,6 +14,8 @@ const MAX_BODY_SIZE = 32 * 1024;
 const ROOMS = new Set(["Основной зал", "VIP-зал"]);
 const TARIFFS = new Set(["hourly", "promotion"]);
 const STATUSES = new Set(["accepted", "rejected"]);
+const TOO_MANY_ATTEMPTS_MESSAGE = "Слишком много попыток. Попробуйте позже.";
+const bookingRateLimiter = createRateLimiter({ limit: 10, windowMs: 10 * 60 * 1000 });
 
 const PRICE_MATRIX = {
   "Основной зал": { hourly: 1000, promotion: 2000 },
@@ -23,6 +31,7 @@ class HttpError extends Error {
 
 function sendJson(response, status, payload, headers = {}) {
   response.statusCode = status;
+  setSecurityHeaders(response);
   response.setHeader("Cache-Control", "no-store");
   response.setHeader("Content-Type", "application/json; charset=utf-8");
   Object.entries(headers).forEach(([name, value]) => response.setHeader(name, value));
@@ -47,12 +56,36 @@ async function readJson(request) {
   return JSON.parse(body || "{}");
 }
 
-function sanitizeText(value, maxLength, optional = false) {
-  const text = typeof value === "string" ? value.trim() : "";
-  if (!optional && !text) {
+function containsUnsafeContent(value) {
+  return /[<>]/.test(value)
+    || /(?:javascript:|on\w+\s*=|<\s*script)/i.test(value)
+    || /(?:--|\/\*|\*\/|\bunion\s+select\b|\binformation_schema\b|['"]\s*(?:or|and)\s+['"]?\w+|(?:^|;)\s*(?:drop|delete|insert|update|select|alter|create)\s+\w+)/i.test(value);
+}
+
+function textField(payload, name, { maxLength, optional = false }) {
+  const value = payload[name];
+  if ((value === undefined || value === null) && optional) {
     return "";
   }
-  return text.slice(0, maxLength);
+  if (typeof value !== "string") {
+    throw new HttpError(400, "Некорректные данные заявки");
+  }
+  const text = [...value.trim()]
+    .map((character) => {
+      const code = character.charCodeAt(0);
+      return code < 32 || code === 127 ? " " : character;
+    })
+    .join("");
+  if (!optional && !text) {
+    throw new HttpError(400, "Некорректные данные заявки");
+  }
+  if (text.length > maxLength) {
+    throw new HttpError(400, "Некорректные данные заявки");
+  }
+  if (containsUnsafeContent(text)) {
+    throw new HttpError(400, "Некорректные данные заявки");
+  }
+  return text;
 }
 
 function normalizePhone(value) {
@@ -69,23 +102,33 @@ function isValidDate(value) {
 }
 
 function validateBooking(payload) {
-  const name = sanitizeText(payload.name, 100);
-  const phone = sanitizeText(payload.phone, 32);
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    throw new HttpError(400, "Некорректные данные заявки");
+  }
+  if (typeof payload.price === "number" && payload.price < 0) {
+    throw new HttpError(400, "Некорректные данные заявки");
+  }
+
+  const name = textField(payload, "name", { maxLength: 80 });
+  const phone = textField(payload, "phone", { maxLength: 32 });
   const phoneNormalized = normalizePhone(phone);
-  const date = sanitizeText(payload.date, 10);
-  const time = sanitizeText(payload.time, 5);
-  const room = sanitizeText(payload.roomType ?? payload.room, 32);
-  const tariff = sanitizeText(payload.tariffType ?? payload.tariff, 16);
-  const comment = sanitizeText(payload.comment, 500, true);
+  const date = textField(payload, "date", { maxLength: 10 });
+  const time = textField(payload, "time", { maxLength: 5 });
+  const room = textField({ room: payload.roomType ?? payload.room }, "room", { maxLength: 32 });
+  const tariff = textField({ tariff: payload.tariffType ?? payload.tariff }, "tariff", { maxLength: 16 });
+  const comment = textField(payload, "comment", { maxLength: 500, optional: true });
 
   if (name.length < 2) {
     throw new HttpError(400, "Введите имя");
   }
-  if (phoneNormalized.length < 10 || phoneNormalized.length > 15) {
+  if (!/^[+\d\s().-]+$/.test(phone) || phoneNormalized.length < 10 || phoneNormalized.length > 15) {
     throw new HttpError(400, "Введите корректный телефон");
   }
   if (!isValidDate(date)) {
     throw new HttpError(400, "Выберите корректную дату");
+  }
+  if (date < new Date().toISOString().slice(0, 10)) {
+    throw new HttpError(400, "Р’С‹Р±РµСЂРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅСѓСЋ РґР°С‚Сѓ");
   }
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
     throw new HttpError(400, "Выберите корректное время");
@@ -159,7 +202,7 @@ function guestBookingId(request, secret) {
 
 function cookie(name, value, maxAge, secureCookies) {
   const secure = secureCookies ? "; Secure" : "";
-  return `${name}=${encodeURIComponent(value)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secure}`;
+  return `${name}=${encodeURIComponent(value)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${secure}`;
 }
 
 function guestBooking(booking) {
@@ -188,9 +231,32 @@ export function createBookingHandler({ store, sessionSecret, secureCookies = tru
   return async function bookingHandler(request, response) {
     const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
     const method = request.method ?? "GET";
+    setSecurityHeaders(response);
+    applyCorsHeaders(request, response);
+
+    if (method === "OPTIONS" && pathname.startsWith("/api/")) {
+      if (!verifyTrustedOrigin(request, { requireHeader: true })) {
+        sendJson(response, 403, { message: "Запрос отклонён" });
+        return;
+      }
+      response.statusCode = 204;
+      response.end();
+      return;
+    }
+    if (pathname.startsWith("/api/admin/") && !verifyTrustedOrigin(request)) {
+      sendJson(response, 403, { message: "Запрос отклонён" });
+      return;
+    }
 
     try {
       if (method === "POST" && pathname === "/api/bookings") {
+        const rateLimit = bookingRateLimiter.check(request);
+        if (rateLimit.limited) {
+          sendJson(response, 429, { message: TOO_MANY_ATTEMPTS_MESSAGE }, {
+            "Retry-After": String(rateLimit.retryAfter),
+          });
+          return;
+        }
         const booking = await store.createBooking(validateBooking(await readJson(request)));
         const expiresAt = Date.now() + GUEST_SESSION_MS;
         sendJson(response, 201, { message: "Заявка успешно отправлена", booking: guestBooking(booking) }, {
@@ -219,6 +285,10 @@ export function createBookingHandler({ store, sessionSecret, secureCookies = tru
 
       const bookingMatch = pathname.match(/^\/api\/admin\/bookings\/([0-9a-f-]{36})$/i);
       if (method === "PATCH" && bookingMatch) {
+        if (!verifyTrustedOrigin(request, { requireHeader: true })) {
+          sendJson(response, 403, { message: "Запрос отклонён" });
+          return;
+        }
         requireAdmin(request);
         const payload = await readJson(request);
         if (!STATUSES.has(payload.status)) {
@@ -233,6 +303,10 @@ export function createBookingHandler({ store, sessionSecret, secureCookies = tru
       }
 
       if (method === "DELETE" && bookingMatch) {
+        if (!verifyTrustedOrigin(request, { requireHeader: true })) {
+          sendJson(response, 403, { message: "Запрос отклонён" });
+          return;
+        }
         requireAdmin(request);
         if (!(await store.deleteBooking(bookingMatch[1]))) {
           throw new HttpError(404, "Заявка не найдена");
@@ -242,6 +316,10 @@ export function createBookingHandler({ store, sessionSecret, secureCookies = tru
       }
 
       if (method === "DELETE" && pathname === "/api/admin/bookings") {
+        if (!verifyTrustedOrigin(request, { requireHeader: true })) {
+          sendJson(response, 403, { message: "Запрос отклонён" });
+          return;
+        }
         requireAdmin(request);
         const payload = await readJson(request);
         if (payload.confirm !== true) {
@@ -258,6 +336,10 @@ export function createBookingHandler({ store, sessionSecret, secureCookies = tru
     } catch (error) {
       if (error instanceof BookingConflictError) {
         sendJson(response, 409, { message: error.message });
+        return;
+      }
+      if (error instanceof SyntaxError) {
+        sendJson(response, 400, { message: "Некорректный запрос" });
         return;
       }
       const status = error instanceof HttpError ? error.status : 500;

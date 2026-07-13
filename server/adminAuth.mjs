@@ -1,11 +1,20 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import {
+  applyCorsHeaders,
+  createRateLimiter,
+  setSecurityHeaders,
+  verifyTrustedOrigin,
+} from "./security.mjs";
 
 const SESSION_COOKIE = "aktau_admin_session";
 const SESSION_DURATION_MS = 12 * 60 * 60 * 1000;
 const MAX_BODY_SIZE = 8 * 1024;
+const TOO_MANY_ATTEMPTS_MESSAGE = "Слишком много попыток. Попробуйте позже.";
+const adminLoginRateLimiter = createRateLimiter({ limit: 5, windowMs: 15 * 60 * 1000 });
 
 function sendJson(response, status, payload, headers = {}) {
   response.statusCode = status;
+  setSecurityHeaders(response);
   response.setHeader("Cache-Control", "no-store");
   response.setHeader("Content-Type", "application/json; charset=utf-8");
   Object.entries(headers).forEach(([name, value]) => response.setHeader(name, value));
@@ -81,7 +90,7 @@ export function hasValidAdminSession(request, secret) {
 
 function sessionCookie(token, maxAge) {
   const secure = process.env.NODE_ENV === "production" || process.env.VERCEL === "1" ? "; Secure" : "";
-  return `${SESSION_COOKIE}=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${maxAge}${secure}`;
+  return `${SESSION_COOKIE}=${encodeURIComponent(token)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}${secure}`;
 }
 
 function logEnvironmentIssue(kind, name) {
@@ -125,6 +134,24 @@ function configurationForPath(pathname) {
 
 export default async function handleAdminAuth(request, response) {
   const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
+  setSecurityHeaders(response);
+  applyCorsHeaders(request, response);
+
+  if (request.method === "OPTIONS" && pathname.startsWith("/api/admin/")) {
+    if (!verifyTrustedOrigin(request, { requireHeader: true })) {
+      sendJson(response, 403, { message: "Запрос отклонён" });
+      return;
+    }
+    response.statusCode = 204;
+    response.end();
+    return;
+  }
+
+  if (pathname.startsWith("/api/admin/") && !verifyTrustedOrigin(request)) {
+    sendJson(response, 403, { message: "Запрос отклонён" });
+    return;
+  }
+
   const config = configurationForPath(pathname);
   if (!config) {
     sendJson(response, 503, { message: "Сервис авторизации временно недоступен" });
@@ -133,9 +160,21 @@ export default async function handleAdminAuth(request, response) {
 
   try {
     if (request.method === "POST" && pathname === "/api/admin/login") {
+      if (!verifyTrustedOrigin(request, { requireHeader: true })) {
+        sendJson(response, 403, { message: "Запрос отклонён" });
+        return;
+      }
+      const rateLimit = adminLoginRateLimiter.check(request);
+      if (rateLimit.limited) {
+        sendJson(response, 429, { message: TOO_MANY_ATTEMPTS_MESSAGE }, {
+          "Retry-After": String(rateLimit.retryAfter),
+        });
+        return;
+      }
       const payload = await readJson(request);
       const password = typeof payload.password === "string" ? payload.password : "";
       if (!constantTimeMatch(password, config.password)) {
+        console.warn("Invalid admin credentials");
         sendJson(response, 401, { message: "Неверный пароль" });
         return;
       }
@@ -160,6 +199,10 @@ export default async function handleAdminAuth(request, response) {
     }
 
     if (request.method === "POST" && pathname === "/api/admin/logout") {
+      if (!verifyTrustedOrigin(request, { requireHeader: true })) {
+        sendJson(response, 403, { message: "Запрос отклонён" });
+        return;
+      }
       sendJson(response, 200, { authenticated: false }, {
         "Set-Cookie": sessionCookie("", 0),
       });

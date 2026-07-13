@@ -43,7 +43,7 @@ after(async () => {
 test("admin authentication creates, validates and clears a protected session", async () => {
   const wrong = await fetch(`${baseUrl}/api/admin/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Origin: baseUrl, "x-forwarded-for": "198.51.100.11" },
     body: JSON.stringify({ password: "wrong-password" }),
   });
   assert.equal(wrong.status, 401);
@@ -51,7 +51,7 @@ test("admin authentication creates, validates and clears a protected session", a
 
   const login = await fetch(`${baseUrl}/api/admin/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Origin: baseUrl, "x-forwarded-for": "198.51.100.12" },
     body: JSON.stringify({ password: process.env.ADMIN_PASSWORD }),
   });
   assert.equal(login.status, 200);
@@ -59,7 +59,7 @@ test("admin authentication creates, validates and clears a protected session", a
   const cookieHeader = login.headers.get("set-cookie");
   assert.match(cookieHeader, /aktau_admin_session=/);
   assert.match(cookieHeader, /HttpOnly/);
-  assert.match(cookieHeader, /SameSite=Strict/);
+  assert.match(cookieHeader, /SameSite=Lax/);
   assert.match(cookieHeader, /Secure/);
   const cookie = cookieHeader.split(";")[0];
 
@@ -74,7 +74,7 @@ test("admin authentication creates, validates and clears a protected session", a
 
   const logout = await fetch(`${baseUrl}/api/admin/logout`, {
     method: "POST",
-    headers: { Cookie: cookie },
+    headers: { Cookie: cookie, Origin: baseUrl },
   });
   assert.equal(logout.status, 200);
   assert.match(logout.headers.get("set-cookie"), /Max-Age=0/);
@@ -104,7 +104,7 @@ test("login route returns 503 when ADMIN_PASSWORD is missing", async () => {
   try {
     const login = await fetch(`${baseUrl}/api/admin/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Origin: baseUrl, "x-forwarded-for": "198.51.100.13" },
       body: JSON.stringify({ password: "whatever" }),
     });
     assert.equal(login.status, 503);
@@ -115,4 +115,43 @@ test("login route returns 503 when ADMIN_PASSWORD is missing", async () => {
       process.env.ADMIN_PASSWORD = previousPassword;
     }
   }
+});
+
+test("admin login is rate limited and rejects foreign origins", async () => {
+  const foreign = await fetch(`${baseUrl}/api/admin/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Origin: "https://example.com",
+      "x-forwarded-for": "198.51.100.14",
+    },
+    body: JSON.stringify({ password: process.env.ADMIN_PASSWORD }),
+  });
+  assert.equal(foreign.status, 403);
+
+  for (let index = 0; index < 5; index += 1) {
+    const response = await fetch(`${baseUrl}/api/admin/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: baseUrl,
+        "x-forwarded-for": "198.51.100.15",
+      },
+      body: JSON.stringify({ password: `wrong-password-${index}` }),
+    });
+    assert.equal(response.status, 401);
+  }
+
+  const limited = await fetch(`${baseUrl}/api/admin/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Origin: baseUrl,
+      "x-forwarded-for": "198.51.100.15",
+    },
+    body: JSON.stringify({ password: "wrong-password-final" }),
+  });
+  assert.equal(limited.status, 429);
+  assert.equal((await limited.json()).message, "Слишком много попыток. Попробуйте позже.");
+  assert.ok(limited.headers.get("content-security-policy"));
 });

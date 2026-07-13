@@ -7,6 +7,7 @@ import { createBookingHandler } from "./bookingApi.mjs";
 
 const PASSWORD = "test-admin-password";
 const SECRET = "test-booking-session-secret-with-at-least-32-characters";
+const MAIN_ROOM = "\u041e\u0441\u043d\u043e\u0432\u043d\u043e\u0439 \u0437\u0430\u043b";
 const bookings = [];
 
 const store = {
@@ -65,10 +66,13 @@ let guestCookie;
 let guestBookingId;
 
 function api(path, options = {}) {
+  const method = options.method ?? "GET";
+  const includeOrigin = method !== "GET" && method !== "HEAD";
   return fetch(`${baseUrl}${path}`, {
     ...options,
     headers: {
       ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(includeOrigin ? { Origin: baseUrl } : {}),
       ...options.headers,
     },
   });
@@ -149,7 +153,54 @@ test("guest must confirm privacy consent before creating a booking", async () =>
   assert.equal((await response.json()).message, "Подтвердите согласие на обработку данных");
 });
 
+test("booking validation rejects unsafe and malformed input", async () => {
+  const unsafe = await api("/api/bookings", {
+    method: "POST",
+    headers: { "x-forwarded-for": "203.0.113.21" },
+    body: JSON.stringify({
+      name: "<script>alert(1)</script>",
+      phone: "+7 701 777 88 99",
+      date: "2099-12-31",
+      time: "18:00",
+      roomType: MAIN_ROOM,
+      tariffType: "hourly",
+      comment: "hello",
+      privacyConsent: true,
+    }),
+  });
+  assert.equal(unsafe.status, 400);
+
+  const forgedPrice = await api("/api/bookings", {
+    method: "POST",
+    headers: { "x-forwarded-for": "203.0.113.22" },
+    body: JSON.stringify({
+      name: "РљР»РёРµРЅС‚",
+      phone: "+7 701 777 88 98",
+      date: "2099-12-31",
+      time: "18:00",
+      roomType: MAIN_ROOM,
+      tariffType: "hourly",
+      price: -100,
+      comment: "hello",
+      privacyConsent: true,
+    }),
+  });
+  assert.equal(forgedPrice.status, 400);
+
+  const malformed = await fetch(`${baseUrl}/api/bookings`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: baseUrl, "x-forwarded-for": "203.0.113.23" },
+    body: "{",
+  });
+  assert.equal(malformed.status, 400);
+});
+
 test("guest cannot list or change bookings through admin API", async () => {
+  const foreignList = await api("/api/admin/bookings", {
+    headers: { Origin: "https://example.com" },
+  });
+  assert.equal(foreignList.status, 403);
+
   const list = await api("/api/admin/bookings");
   assert.equal(list.status, 401);
 
@@ -232,4 +283,44 @@ test("VIP promotion uses 3500 and admin can delete and clear", async () => {
   });
   assert.equal(cleared.status, 200);
   assert.equal(bookings.length, 0);
+});
+
+test("booking creation is rate limited per IP", async () => {
+  for (let index = 0; index < 10; index += 1) {
+    const response = await api("/api/bookings", {
+      method: "POST",
+      headers: { "x-forwarded-for": "203.0.113.77" },
+      body: JSON.stringify({
+        name: `РљР»РёРµРЅС‚ ${index}`,
+        phone: `+7 701 555 0${String(index).padStart(3, "0")}`,
+        date: "2099-12-31",
+        time: "19:00",
+        roomType: MAIN_ROOM,
+        tariffType: "hourly",
+        comment: "",
+        privacyConsent: true,
+      }),
+    });
+    assert.equal(response.status, 201);
+  }
+
+  const limited = await api("/api/bookings", {
+    method: "POST",
+    headers: { "x-forwarded-for": "203.0.113.77" },
+    body: JSON.stringify({
+      name: "РљР»РёРµРЅС‚ 11",
+      phone: "+7 701 555 9999",
+      date: "2099-12-31",
+      time: "20:00",
+      roomType: MAIN_ROOM,
+      tariffType: "hourly",
+      comment: "",
+      privacyConsent: true,
+    }),
+  });
+  assert.equal(limited.status, 429);
+  assert.equal(
+    (await limited.json()).message,
+    "\u0421\u043b\u0438\u0448\u043a\u043e\u043c \u043c\u043d\u043e\u0433\u043e \u043f\u043e\u043f\u044b\u0442\u043e\u043a. \u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u043f\u043e\u0437\u0436\u0435.",
+  );
 });
