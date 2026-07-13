@@ -1,7 +1,7 @@
 .card-nav-container {
   position: fixed;
   z-index: 60;
-  top: 18px;
+  top: 14px;
   left: 50%;
   width: min(1180px, calc(100% - 36px));
   transform: translateX(-50%);
@@ -14,8 +14,8 @@
   overflow: visible;
   border: 1px solid transparent;
   border-radius: 26px;
-  background: rgba(9, 9, 13, 0.46);
-  box-shadow: 0 18px 58px rgba(0, 0, 0, 0.22);
+  background: rgba(9, 9, 13, 0.42);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.18);
   transition:
     background 220ms ease,
     border-color 220ms ease,
@@ -26,9 +26,9 @@
 .card-nav.is-open,
 .card-nav:focus-within {
   border-color: rgba(255, 255, 255, 0.14);
-  background: rgba(9, 9, 13, 0.82);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(24px);
+  background: rgba(9, 9, 13, 0.72);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(14px);
 }
 
 .card-nav-top {
@@ -36,17 +36,17 @@
   z-index: 2;
   inset: 0 0 auto;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   height: var(--nav-height);
-  padding: 0 14px;
+  padding: 0 12px;
 }
 
 .card-nav-menu-button {
   display: grid;
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   place-content: center;
   gap: 6px;
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -64,8 +64,7 @@
 }
 
 .card-nav-menu-button:focus-visible,
-.card-nav-links > a:focus-visible,
-.card-nav-cta:focus-visible {
+.card-nav-links > a:focus-visible {
   outline: 2px solid rgba(201, 108, 255, 0.82);
   outline-offset: 3px;
 }
@@ -96,13 +95,8 @@
 
 .card-nav-brand:hover .brand-logo-frame {
   border-color: rgba(201, 108, 255, 0.38);
-  box-shadow: 0 0 30px rgba(201, 108, 255, 0.34);
+  box-shadow: 0 0 18px rgba(201, 108, 255, 0.22);
   transform: translateY(-1px);
-}
-
-.card-nav-cta {
-  min-height: 46px;
-  padding: 0 18px;
 }
 
 .card-nav-content {
@@ -228,35 +222,30 @@
   }
 
   .card-nav {
-    height: 70px;
-    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.18);
+    height: 62px;
+    box-shadow: 0 12px 38px rgba(0, 0, 0, 0.16);
   }
 
   .card-nav.is-scrolled,
   .card-nav.is-open,
   .card-nav:focus-within {
-    box-shadow: 0 18px 52px rgba(0, 0, 0, 0.34);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 16px 46px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(12px);
   }
 
   .card-nav-top {
-    gap: 16px;
-    height: 70px;
+    gap: 14px;
+    height: 62px;
     padding: 0 12px;
   }
 
   .card-nav-menu-button {
-    width: 42px;
-    height: 42px;
-  }
-
-  .card-nav-cta {
-    min-height: 42px;
-    padding: 0 16px;
+    width: 38px;
+    height: 38px;
   }
 
   .card-nav-content {
-    top: 80px;
+    top: 72px;
   }
 }
 
@@ -299,20 +288,20 @@
   .card-nav-content {
     top: calc(var(--nav-height) + 8px);
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 7px;
     max-height: calc(
       100svh - var(--nav-height) - max(20px, env(safe-area-inset-top)) - env(safe-area-inset-bottom)
     );
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 8px 10px max(10px, env(safe-area-inset-bottom));
+    padding: 8px 9px max(10px, env(safe-area-inset-bottom));
     backdrop-filter: blur(10px);
   }
 
   .card-nav-card {
     min-height: 108px;
-    gap: 12px;
-    padding: 16px;
+    gap: 10px;
+    padding: 15px;
   }
 
   .card-nav-links .admin-nav-control {
@@ -342,8 +331,8 @@
       radial-gradient(circle at 12% 0%, rgba(168, 85, 247, 0.12), transparent 44%),
       radial-gradient(circle at 92% 8%, rgba(56, 189, 248, 0.06), transparent 36%),
       rgba(9, 9, 13, 0.84);
-    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.34);
-    backdrop-filter: blur(20px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
   }
 
   .card-nav-top {
@@ -394,7 +383,7 @@
     display: grid;
     grid-template-columns: 30px minmax(0, 1fr) auto;
     align-items: center;
-    min-height: 48px;
+    min-height: 46px;
     padding: 0 12px;
     border-color: rgba(201, 108, 255, 0.16);
     border-radius: 16px;

@@ -26,9 +26,9 @@ export function ButtonLink({
     <MotionLink
       className={`button button-${variant} ${className}`.trim()}
       to={to}
-      whileHover={{ y: -1, scale: 1.012 }}
+      whileHover={{ y: -1, scale: 1.01 }}
       whileTap={{ scale: 0.985 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       {...props}
     >
       <span>{children}</span>

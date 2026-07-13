@@ -51,8 +51,8 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            Премиальный gaming lounge для спокойной консольной игры, приватного отдыха
-            и вечерних встреч в Актау.
+            Пространство для спокойной игры, приватного отдыха и встреч, где все
+            продумано для комфортного вечера.
           </motion.p>
           <motion.div
             className="hero-actions"

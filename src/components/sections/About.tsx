@@ -9,8 +9,8 @@ export function About() {
       className="about-section"
       eyebrow="О клубе"
       id="about"
-      title="Спокойный lounge-формат для консольного отдыха."
-      text="99 AKTAU подается как современное пространство с чистой композицией, темным премиальным светом и понятным путем к бронированию."
+      title="Пространство для спокойной игры и приватного отдыха."
+      text="99 AKTAU соединяет комфортную посадку, приглушенный свет и понятный путь к бронированию без лишнего шума."
     >
       <div className="about-grid">
         {aboutCards.map((card, index) => {
@@ -20,8 +20,8 @@ export function About() {
             <Reveal delay={index * 0.08} key={card.title}>
               <motion.article
                 className="feature-card"
-                whileHover={{ y: -8, rotateX: 2, rotateY: -2 }}
-                transition={{ duration: 0.24, ease: "easeOut" }}
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
               >
                 <span className="feature-icon">
                   <Icon aria-hidden size={22} />

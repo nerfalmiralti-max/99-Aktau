@@ -56,9 +56,9 @@ export function AnimatedController() {
       <motion.svg
         viewBox="0 0 560 360"
         role="img"
-        animate={shouldAnimate ? { rotate: [-1.4, 1.6, -1.4] } : { rotate: 0 }}
+        animate={shouldAnimate ? { x: [0, 3, 0], y: [0, -2, 0] } : { x: 0, y: 0 }}
         transition={{
-          duration: shouldAnimate ? 7.2 : 0,
+          duration: shouldAnimate ? 9.5 : 0,
           repeat: shouldAnimate ? Infinity : 0,
           ease: "easeInOut",
         }}

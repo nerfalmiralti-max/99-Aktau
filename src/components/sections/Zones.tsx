@@ -31,8 +31,8 @@ export function Zones() {
                 <PremiumBorderGlow className="zone-card-glow">
                   <motion.article
                     className="zone-card"
-                    whileHover={{ x: 8, scale: 1.01 }}
-                    transition={{ duration: 0.24, ease: "easeOut" }}
+                    whileHover={{ x: 4, scale: 1.006 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
                   >
                     <span className="zone-icon">
                       <Icon aria-hidden size={22} />

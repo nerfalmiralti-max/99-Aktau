@@ -2,7 +2,7 @@ import { Armchair, CalendarCheck, DoorOpen, Gamepad2, Gem } from "lucide-react";
 
 export const aboutCards = [
   {
-    title: "Lounge вместо шумного зала",
+    title: "Спокойная атмосфера вместо шума",
     text: "Пространство собрано вокруг спокойной атмосферы, мягкого света и ощущения приватного вечера.",
     icon: Gem,
   },
