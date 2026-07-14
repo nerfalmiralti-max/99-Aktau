@@ -10,6 +10,7 @@
     "build": "npm run seo:generate && tsc -b && vite build && npm run seo:pages",
     "lint": "eslint .",
     "preview": "vite preview --host 127.0.0.1",
+    "test": "npm run test:server",
     "test:server": "node --test server/*.test.mjs"
   },
   "dependencies": {

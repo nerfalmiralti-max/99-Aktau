@@ -12,6 +12,27 @@ const previousEnvironment = {
 let baseUrl;
 let server;
 
+async function invokeHandler(request) {
+  const headers = new Map();
+  const response = {
+    getHeader(name) {
+      return headers.get(name.toLowerCase());
+    },
+    setHeader(name, value) {
+      headers.set(name.toLowerCase(), value);
+    },
+    end(body = "") {
+      this.body = body;
+    },
+  };
+  await handleAdminAuth(request, response);
+  return {
+    body: JSON.parse(response.body || "{}"),
+    headers,
+    status: response.statusCode,
+  };
+}
+
 before(async () => {
   process.env.ADMIN_PASSWORD = "test-admin-password";
   process.env.ADMIN_SESSION_SECRET = "test-session-secret-with-at-least-32-characters";
@@ -115,6 +136,36 @@ test("login route returns 503 when ADMIN_PASSWORD is missing", async () => {
       process.env.ADMIN_PASSWORD = previousPassword;
     }
   }
+});
+
+test("session route returns a safe 503 when ADMIN_SESSION_SECRET is missing", async () => {
+  const previousSecret = process.env.ADMIN_SESSION_SECRET;
+  delete process.env.ADMIN_SESSION_SECRET;
+
+  try {
+    const session = await fetch(`${baseUrl}/api/admin/session`);
+    assert.equal(session.status, 503);
+    const body = await session.json();
+    assert.equal(body.message, "Сервис авторизации временно недоступен");
+    assert.equal(JSON.stringify(body).includes(previousSecret), false);
+  } finally {
+    process.env.ADMIN_SESSION_SECRET = previousSecret;
+  }
+});
+
+test("login rejects an oversized pre-parsed request body", async () => {
+  const response = await invokeHandler({
+    body: { password: "x".repeat(9 * 1024) },
+    headers: {
+      host: "99-aktau.vercel.app",
+      origin: "https://99-aktau.vercel.app",
+      "x-forwarded-for": "198.51.100.16",
+    },
+    method: "POST",
+    url: "/api/admin/login",
+  });
+  assert.equal(response.status, 413);
+  assert.equal(response.body.message, "Запрос слишком большой");
 });
 
 test("admin login is rate limited and rejects foreign origins", async () => {

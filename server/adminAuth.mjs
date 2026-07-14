@@ -12,6 +12,13 @@ const MAX_BODY_SIZE = 8 * 1024;
 const TOO_MANY_ATTEMPTS_MESSAGE = "Слишком много попыток. Попробуйте позже.";
 const adminLoginRateLimiter = createRateLimiter({ limit: 5, windowMs: 15 * 60 * 1000 });
 
+class HttpError extends Error {
+  constructor(status, message) {
+    super(message);
+    this.status = status;
+  }
+}
+
 function sendJson(response, status, payload, headers = {}) {
   response.statusCode = status;
   setSecurityHeaders(response);
@@ -44,17 +51,24 @@ function parseCookies(request) {
 
 async function readJson(request) {
   if (request.body && typeof request.body === "object" && !Buffer.isBuffer(request.body)) {
+    if (Buffer.byteLength(JSON.stringify(request.body)) > MAX_BODY_SIZE) {
+      throw new HttpError(413, "Запрос слишком большой");
+    }
     return request.body;
   }
   if (typeof request.body === "string" || Buffer.isBuffer(request.body)) {
-    return JSON.parse(String(request.body || "{}"));
+    const body = String(request.body || "{}");
+    if (Buffer.byteLength(body) > MAX_BODY_SIZE) {
+      throw new HttpError(413, "Запрос слишком большой");
+    }
+    return JSON.parse(body);
   }
 
   let body = "";
   for await (const chunk of request) {
     body += chunk;
     if (Buffer.byteLength(body) > MAX_BODY_SIZE) {
-      throw new Error("REQUEST_TOO_LARGE");
+      throw new HttpError(413, "Запрос слишком большой");
     }
   }
   return JSON.parse(body || "{}");
@@ -211,7 +225,9 @@ export default async function handleAdminAuth(request, response) {
 
     response.setHeader("Allow", pathname.endsWith("/session") ? "GET" : "POST");
     sendJson(response, 405, { message: "Метод не поддерживается" });
-  } catch {
-    sendJson(response, 400, { message: "Некорректный запрос" });
+  } catch (error) {
+    const status = error instanceof HttpError ? error.status : 400;
+    const message = error instanceof HttpError ? error.message : "Некорректный запрос";
+    sendJson(response, status, { message });
   }
 }

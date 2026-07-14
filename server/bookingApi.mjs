@@ -40,10 +40,17 @@ function sendJson(response, status, payload, headers = {}) {
 
 async function readJson(request) {
   if (request.body && typeof request.body === "object" && !Buffer.isBuffer(request.body)) {
+    if (Buffer.byteLength(JSON.stringify(request.body)) > MAX_BODY_SIZE) {
+      throw new HttpError(413, "Запрос слишком большой");
+    }
     return request.body;
   }
   if (typeof request.body === "string" || Buffer.isBuffer(request.body)) {
-    return JSON.parse(String(request.body || "{}"));
+    const body = String(request.body || "{}");
+    if (Buffer.byteLength(body) > MAX_BODY_SIZE) {
+      throw new HttpError(413, "Запрос слишком большой");
+    }
+    return JSON.parse(body);
   }
 
   let body = "";
@@ -128,7 +135,7 @@ function validateBooking(payload) {
     throw new HttpError(400, "Выберите корректную дату");
   }
   if (date < new Date().toISOString().slice(0, 10)) {
-    throw new HttpError(400, "Р’С‹Р±РµСЂРёС‚Рµ РєРѕСЂСЂРµРєС‚РЅСѓСЋ РґР°С‚Сѓ");
+    throw new HttpError(400, "Выберите корректную дату");
   }
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
     throw new HttpError(400, "Выберите корректное время");

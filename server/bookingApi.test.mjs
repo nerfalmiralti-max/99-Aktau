@@ -78,6 +78,26 @@ function api(path, options = {}) {
   });
 }
 
+async function invokeBookingHandler(request) {
+  const headers = new Map();
+  const response = {
+    getHeader(name) {
+      return headers.get(name.toLowerCase());
+    },
+    setHeader(name, value) {
+      headers.set(name.toLowerCase(), value);
+    },
+    end(body = "") {
+      this.body = body;
+    },
+  };
+  await bookingHandler(request, response);
+  return {
+    body: JSON.parse(response.body || "{}"),
+    status: response.statusCode,
+  };
+}
+
 before(async () => {
   previousPassword = process.env.ADMIN_PASSWORD;
   previousSecret = process.env.ADMIN_SESSION_SECRET;
@@ -193,6 +213,38 @@ test("booking validation rejects unsafe and malformed input", async () => {
     body: "{",
   });
   assert.equal(malformed.status, 400);
+
+  const pastDate = await api("/api/bookings", {
+    method: "POST",
+    headers: { "x-forwarded-for": "203.0.113.24" },
+    body: JSON.stringify({
+      name: "Клиент",
+      phone: "+7 701 777 88 97",
+      date: "2000-01-01",
+      time: "18:00",
+      roomType: MAIN_ROOM,
+      tariffType: "hourly",
+      comment: "",
+      privacyConsent: true,
+    }),
+  });
+  assert.equal(pastDate.status, 400);
+  assert.equal((await pastDate.json()).message, "Выберите корректную дату");
+});
+
+test("booking creation rejects an oversized pre-parsed request body", async () => {
+  const response = await invokeBookingHandler({
+    body: { comment: "x".repeat(33 * 1024) },
+    headers: {
+      host: "99-aktau.vercel.app",
+      origin: "https://99-aktau.vercel.app",
+      "x-forwarded-for": "203.0.113.25",
+    },
+    method: "POST",
+    url: "/api/bookings",
+  });
+  assert.equal(response.status, 413);
+  assert.equal(response.body.message, "Запрос слишком большой");
 });
 
 test("guest cannot list or change bookings through admin API", async () => {
