@@ -93,3 +93,35 @@ Build также генерирует `robots.txt`, `sitemap.xml` и HTML-фай
 - заявка сохраняется в Supabase;
 - статус заявки сохраняется после принятия или отклонения;
 - WhatsApp, Instagram, `robots.txt` и `sitemap.xml` доступны.
+
+## Проверки
+
+Перед релизом и передачей выполните:
+
+```bash
+npm run lint
+npx tsc --noEmit
+npm test
+npm run build
+npm run handover:check
+npm audit
+```
+
+`handover:check` проверяет обязательные файлы, безопасный шаблон окружения,
+Git-tracked `.env`-файлы, базовую конфигурацию и очевидные признаки секретов.
+Скрипт не читает `.env.local`, не подключается к Supabase и ничего не изменяет.
+
+## Безопасность
+
+- Храните production-переменные только в защищённых настройках Vercel и локальном
+  `.env.local`, который исключён из Git.
+- Не передавайте `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD` и
+  `ADMIN_SESSION_SECRET` в issue, pull request, обычных чатах или клиентском коде.
+- После смены владельца создайте новые секреты, отзовите старые и проверьте доступы.
+- Включите двухфакторную аутентификацию для GitHub, Vercel, Supabase и Google.
+
+## Документация по передаче
+
+- [HANDOVER.md](HANDOVER.md) — настройка GitHub, Vercel, Supabase, окружения,
+  домена, резервных копий и порядок ручной передачи.
+- [TRANSFER_CHECKLIST.md](TRANSFER_CHECKLIST.md) — финальный чек-лист владельца.
