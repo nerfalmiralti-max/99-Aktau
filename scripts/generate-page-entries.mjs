@@ -10,7 +10,8 @@ if (siteUrl.protocol !== "https:") {
 }
 
 const origin = siteUrl.origin;
-const sourceHtml = await readFile(resolve("dist/index.html"), "utf8");
+const sourceHtml = (await readFile(resolve("dist/index.html"), "utf8"))
+  .replaceAll(seoConfig.siteUrl, origin);
 
 function escapeHtml(value) {
   return value

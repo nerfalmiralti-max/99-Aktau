@@ -26,7 +26,7 @@ function ContactCard({ icon: Icon, label, value, href }: ContactCardProps) {
       </span>
       <span>
         <small>{label}</small>
-        <strong>{value ?? "Будет добавлено"}</strong>
+        <strong>{value ?? "Не указано"}</strong>
       </span>
       {href ? <ExternalLink aria-hidden className="contact-external" size={16} /> : null}
     </>
@@ -59,8 +59,8 @@ export function Contacts() {
       className="contacts-section"
       eyebrow="Контакты"
       id="contacts"
-      title="Адрес, связь и маршрут без лишних шагов."
-      text="Все контакты 99 AKTAU хранятся в одном конфиге, поэтому сайт готов к подключению реальных телефона, WhatsApp и Instagram."
+      title="Свяжитесь с 99 AKTAU удобным способом."
+      text="Позвоните, напишите в WhatsApp или Instagram либо откройте адрес клуба в Google Maps."
     >
       <div className="contacts-layout">
           <Reveal className="contacts-list">

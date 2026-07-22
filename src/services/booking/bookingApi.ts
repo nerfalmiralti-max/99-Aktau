@@ -1,5 +1,4 @@
 import type { AdminBooking, BookingInput, BookingRequest, BookingStatus } from "./types";
-import { getBookingPrice } from "./types";
 
 export class BookingApiError extends Error {
   status: number;
@@ -40,14 +39,14 @@ export async function requestJson<Response>(path: string, options: RequestInit =
     const fallback = response.status === 401
       ? "Требуется вход администратора"
       : response.status === 409
-        ? "Достигнут лимит активных бронирований"
+        ? "Выбранное время недоступно либо на номер уже оформлена активная будущая заявка"
         : response.status >= 500 || response.status === 404
           ? "Сервис временно недоступен"
           : "Проверьте данные заявки";
     throw new BookingApiError(response.status, payload?.message ?? fallback);
   }
   if (!payload) {
-    throw new BookingApiError(500, "Сервис вернул некорректный ответ");
+    throw new BookingApiError(500, "Сервис бронирования временно недоступен");
   }
   return payload;
 }
@@ -57,10 +56,15 @@ export const bookingApi = {
     return requestJson<{ message: string; booking: BookingRequest }>("/api/bookings", {
       method: "POST",
       body: JSON.stringify({
-        ...input,
-        roomType: input.room,
-        tariffType: input.tariff,
-        price: getBookingPrice(input.room, input.tariff),
+        name: input.name,
+        phone: input.phone,
+        date: input.date,
+        time: input.time,
+        durationHours: input.durationHours,
+        room: input.room,
+        tariff: input.tariff,
+        comment: input.comment,
+        privacyConsent: input.privacyConsent,
       }),
     });
   },

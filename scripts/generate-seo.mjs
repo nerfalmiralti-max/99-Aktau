@@ -14,7 +14,6 @@ siteUrl.search = "";
 siteUrl.hash = "";
 const origin = siteUrl.origin;
 const publicDirectory = resolve("public");
-const lastModified = new Date().toISOString().slice(0, 10);
 
 const robots = [
   "User-agent: *",
@@ -27,7 +26,6 @@ const robots = [
 
 const sitemapEntries = seoConfig.pages.map(({ path, changeFrequency, priority }) => `  <url>
     <loc>${new URL(path, origin).href}</loc>
-    <lastmod>${lastModified}</lastmod>
     <changefreq>${changeFrequency}</changefreq>
     <priority>${priority}</priority>
   </url>`).join("\n");

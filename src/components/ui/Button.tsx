@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { HTMLMotionProps } from "framer-motion";
 import type { ReactNode } from "react";
 import { Link, type To } from "react-router-dom";
@@ -22,13 +22,14 @@ export function ButtonLink({
   variant = "primary",
   ...props
 }: ButtonLinkProps) {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <MotionLink
       className={`button button-${variant} ${className}`.trim()}
       to={to}
-      whileHover={{ y: -1, scale: 1.01 }}
-      whileTap={{ scale: 0.985 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      whileHover={shouldReduceMotion ? undefined : { y: -1, scale: 1.01 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.985 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: "easeOut" }}
       {...props}
     >
       <span>{children}</span>

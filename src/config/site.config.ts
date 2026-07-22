@@ -21,7 +21,7 @@ export const siteConfig = {
     phone: "+7 701 081 54 95",
     whatsapp: "+7 701 081 54 95",
     instagram: "@99.aktau",
-    instagramUrl: "https://www.instagram.com/99.aktau?igsh=ZGV2eDZseWl4ZGNt",
+    instagramUrl: "https://www.instagram.com/99.aktau/",
     address: "28-й микрорайон, 68/3, ЖК «Империя», Актау",
     mapQuery: "28-й микрорайон, 68/3, ЖК Империя, Актау",
   },

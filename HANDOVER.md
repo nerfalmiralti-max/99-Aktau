@@ -46,7 +46,11 @@ SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 ADMIN_PASSWORD=
 ADMIN_SESSION_SECRET=
+SITE_URL=
 ```
+
+`SITE_URL` — публичный HTTPS-origin сайта для canonical URL, sitemap, robots и
+structured data. Остальные четыре значения остаются server-only.
 
 ### `SUPABASE_URL`
 
@@ -141,7 +145,7 @@ openssl rand -base64 48
 
 ```bash
 npm run lint
-npx tsc --noEmit
+npm run typecheck
 npm test
 npm run build
 npm run handover:check
@@ -170,7 +174,7 @@ npm audit
 1. Создайте Vercel-проект в аккаунте клиента и импортируйте GitHub-репозиторий.
 2. Выберите production-ветку `main`.
 3. Укажите build command `npm run build` и output directory `dist`.
-4. Добавьте четыре переменные окружения из раздела выше отдельно для Production.
+4. Добавьте пять переменных окружения из раздела выше отдельно для Production.
    Не копируйте их в документацию и не делайте клиентскими `VITE_` переменными.
 5. Запустите deployment и проверьте build/runtime logs без публикации секретов.
 6. Проверьте страницы `/`, `/about`, `/zones`, `/booking`, `/contacts`, а также
@@ -183,9 +187,11 @@ npm audit
 ## Supabase setup
 
 1. Создайте Supabase-проект в аккаунте клиента и сохраните recovery-информацию.
-2. В SQL Editor выполните [supabase/schema.sql](supabase/schema.sql).
-3. Убедитесь, что созданы таблица `public.bookings`, индексы и функция
-   `public.create_booking_request`.
+2. Для новой базы выполните [supabase/schema.sql](supabase/schema.sql). Для
+   существующей базы следуйте [supabase/MIGRATION.md](supabase/MIGRATION.md) и
+   примените additive migration до деплоя нового API.
+3. Убедитесь, что созданы таблица `public.bookings`, индексы и функции
+   `public.create_booking_request_v2`, `public.update_booking_status`.
 4. Проверьте, что RLS включён, публичные политики удалены, а права на таблицу и
    RPC выданы только роли `service_role`.
 5. В Project Settings → API получите project URL и server-side service role key.

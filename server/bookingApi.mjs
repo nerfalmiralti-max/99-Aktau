@@ -1,6 +1,10 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import {
+  calculateBookingQuote,
+  isValidDurationHours,
+} from "../shared/bookingPolicy.mjs";
 import { hasValidAdminSession } from "./adminAuth.mjs";
-import { BookingConflictError } from "./bookingErrors.mjs";
+import { BookingConflictError, BookingValidationError } from "./bookingErrors.mjs";
 import {
   applyCorsHeaders,
   createRateLimiter,
@@ -16,11 +20,6 @@ const TARIFFS = new Set(["hourly", "promotion"]);
 const STATUSES = new Set(["accepted", "rejected"]);
 const TOO_MANY_ATTEMPTS_MESSAGE = "Слишком много попыток. Попробуйте позже.";
 const bookingRateLimiter = createRateLimiter({ limit: 10, windowMs: 10 * 60 * 1000 });
-
-const PRICE_MATRIX = {
-  "Основной зал": { hourly: 1000, promotion: 2000 },
-  "VIP-зал": { hourly: 1500, promotion: 3500 },
-};
 
 class HttpError extends Error {
   constructor(status, message) {
@@ -124,6 +123,7 @@ function validateBooking(payload) {
   const room = textField({ room: payload.roomType ?? payload.room }, "room", { maxLength: 32 });
   const tariff = textField({ tariff: payload.tariffType ?? payload.tariff }, "tariff", { maxLength: 16 });
   const comment = textField(payload, "comment", { maxLength: 500, optional: true });
+  const durationHours = payload.durationHours;
 
   if (name.length < 2) {
     throw new HttpError(400, "Введите имя");
@@ -146,8 +146,24 @@ function validateBooking(payload) {
   if (!TARIFFS.has(tariff)) {
     throw new HttpError(400, "Выберите тариф");
   }
+  if (!isValidDurationHours(durationHours)) {
+    throw new HttpError(400, "Продолжительность должна быть целым числом от 1 до 12 часов");
+  }
   if (payload.privacyConsent !== true) {
     throw new HttpError(400, "Подтвердите согласие на обработку данных");
+  }
+
+  let quote;
+  try {
+    quote = calculateBookingQuote(room, tariff, durationHours, date, time);
+  } catch {
+    const message = tariff === "promotion"
+      ? "Акция 2+1 доступна на 3 часа с завершением не позднее 00:00 по времени Актау"
+      : "Проверьте дату, время и продолжительность бронирования";
+    throw new HttpError(400, message);
+  }
+  if (Date.parse(quote.startAt) <= Date.now()) {
+    throw new HttpError(400, "Выберите будущие дату и время");
   }
 
   return {
@@ -158,7 +174,9 @@ function validateBooking(payload) {
     time,
     room,
     tariff,
-    price: PRICE_MATRIX[room][tariff],
+    durationHours,
+    ...quote,
+    price: quote.estimatedTotal,
     comment,
   };
 }
@@ -219,8 +237,17 @@ function guestBooking(booking) {
     phone: booking.phone,
     date: booking.date,
     time: booking.time,
+    durationHours: booking.durationHours,
+    startAt: booking.startAt,
+    endAt: booking.endAt,
+    endDate: booking.endDate,
+    endTime: booking.endTime,
     room: booking.room,
     tariff: booking.tariff,
+    hourlyPrice: booking.hourlyPrice,
+    baseTotal: booking.baseTotal,
+    promotionDiscount: booking.promotionDiscount,
+    estimatedTotal: booking.estimatedTotal,
     price: booking.price,
     comment: booking.comment,
     status: booking.status,
@@ -343,6 +370,10 @@ export function createBookingHandler({ store, sessionSecret, secureCookies = tru
     } catch (error) {
       if (error instanceof BookingConflictError) {
         sendJson(response, 409, { message: error.message });
+        return;
+      }
+      if (error instanceof BookingValidationError) {
+        sendJson(response, 400, { message: error.message });
         return;
       }
       if (error instanceof SyntaxError) {

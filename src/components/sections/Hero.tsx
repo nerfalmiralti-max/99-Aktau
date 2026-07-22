@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, ArrowRight, CalendarCheck, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, CalendarCheck, Clock3, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatedController } from "../brand/AnimatedController";
@@ -32,39 +32,54 @@ export function Hero() {
         <div className="hero-copy">
           <motion.span
             className="eyebrow hero-eyebrow"
-            initial={{ opacity: 0, y: 12 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.44, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.44, delay: shouldReduceMotion ? 0 : 0.06, ease: [0.22, 1, 0.36, 1] }}
           >
             <MapPin aria-hidden size={15} />
-            {siteConfig.brand.city}
+            PlayStation-клуб · {siteConfig.brand.city}
           </motion.span>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.52, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.52, delay: shouldReduceMotion ? 0 : 0.12, ease: [0.22, 1, 0.36, 1] }}
           >
             {siteConfig.brand.name}
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 16 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.52, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.52, delay: shouldReduceMotion ? 0 : 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            Пространство для спокойной игры, приватного отдыха и встреч, где все
-            продумано для комфортного вечера.
+            Основной зал — 1 000 ₸ в час, VIP-зал — 1 500 ₸ в час. Выберите зал,
+            дату, время и продолжительность — заявка оформляется онлайн.
           </motion.p>
           <motion.div
-            className="hero-actions"
-            initial={{ opacity: 0, y: 14 }}
+            className="hero-trust-row"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.48, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.48, delay: shouldReduceMotion ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span className="hero-trust-item">
+              <Clock3 aria-hidden size={16} />
+              Акция 2+1 ежедневно до 00:00
+            </span>
+            <span className="hero-address">
+              <MapPin aria-hidden size={16} />
+              {siteConfig.contacts.address}
+            </span>
+          </motion.div>
+          <motion.div
+            className="hero-actions"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.48, delay: shouldReduceMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
             <ButtonLink to="/booking" icon={<CalendarCheck aria-hidden size={18} />}>
               Забронировать
             </ButtonLink>
             <ButtonLink to="/zones" variant="secondary" icon={<ArrowRight aria-hidden size={18} />}>
-              Игровые зоны
+              Сравнить залы
             </ButtonLink>
           </motion.div>
         </div>

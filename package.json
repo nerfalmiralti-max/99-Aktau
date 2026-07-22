@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc -b --pretty false",
     "seo:generate": "node scripts/generate-seo.mjs",
     "seo:pages": "node scripts/generate-page-entries.mjs",
-    "build": "npm run seo:generate && tsc -b && vite build && npm run seo:pages",
+    "seo:verify": "node scripts/verify-dist-seo.mjs",
+    "build": "npm run seo:generate && tsc -b && vite build && npm run seo:pages && npm run seo:verify",
     "lint": "eslint .",
     "preview": "vite preview --host 127.0.0.1",
     "test": "npm run test:server",
@@ -15,7 +17,6 @@
     "handover:check": "node scripts/pre-handover-check.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "latest",
     "@vercel/analytics": "^2.0.1",
     "framer-motion": "latest",
     "lucide-react": "latest",

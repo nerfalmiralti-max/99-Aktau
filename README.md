@@ -9,9 +9,24 @@
 - TypeScript
 - React Router
 - Framer Motion
-- GSAP
 - Supabase REST/RPC
 - Vercel Serverless Functions
+
+## Brand color tokens
+
+The established 99 AKTAU palette is defined in `src/styles/global.css` and must remain the source of truth:
+
+- background `--bg`: `#07070a`;
+- primary text `--text`: `#f7f4ff`;
+- secondary text `--text-soft`: `#d4ccdd`;
+- muted text `--muted`: `#918a9c`;
+- primary accent `--accent`: `#c96cff`;
+- supporting accent `--accent-cyan`: `#46d8ff`;
+- warm accent `--accent-warm`: `#d8b16b`;
+- success `--success`: `#82e0a4`;
+- danger `--danger`: `#ff7a88`.
+
+Graphite surfaces, translucent borders, shadows, and interaction states are derived from these existing tokens; no replacement dominant palette is used.
 
 ## Локальный запуск
 
@@ -31,16 +46,18 @@ SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 ADMIN_PASSWORD=
 ADMIN_SESSION_SECRET=
+SITE_URL=https://example.com
 ```
 
 `ADMIN_SESSION_SECRET` должен быть длинной случайной строкой не короче 32 символов. Не коммитьте `.env`, `.env.local` и любые реальные секреты в Git.
 
 ## Supabase
 
-1. Откройте Supabase SQL Editor.
-2. Выполните содержимое `supabase/schema.sql`.
-3. Убедитесь, что таблица `bookings` и функция `create_booking_request` созданы.
-4. В Vercel добавьте `SUPABASE_URL` и `SUPABASE_SERVICE_ROLE_KEY`.
+1. Для новой базы выполните `supabase/schema.sql` в Supabase SQL Editor.
+2. Для существующей базы следуйте `supabase/MIGRATION.md` и примените additive
+   migration до деплоя нового API.
+3. Убедитесь, что созданы `create_booking_request_v2` и `update_booking_status`.
+4. В Vercel добавьте server-only переменные и публичный `SITE_URL`.
 
 `SUPABASE_SERVICE_ROLE_KEY` используется только на сервере. Не добавляйте его в клиентский код и не используйте как `VITE_` переменную.
 
@@ -69,11 +86,16 @@ Build также генерирует `robots.txt`, `sitemap.xml` и HTML-фай
 ## Проверка бронирования
 
 1. Откройте страницу `/booking`.
-2. Выберите зал, тариф, дату и время.
+2. Выберите зал, тариф, дату, время и продолжительность от 1 до 12 часов.
 3. Заполните имя, телефон, комментарий при необходимости.
 4. Подтвердите согласие на обработку данных.
 5. Отправьте заявку и проверьте блок "Ваша заявка".
 6. Обновите страницу и убедитесь, что заявка восстанавливается.
+
+Итог, время завершения и акция пересчитываются на сервере. Акция 2+1 доступна
+только на 3 часа с завершением не позднее 00:00 по времени Актау. Интервалы
+`pending` и `accepted` одного зала не могут пересекаться; соседние интервалы
+разрешены. На один нормализованный номер телефона допускается только одна активная будущая заявка. Будущие заявки со статусами `pending` и `accepted` блокируют новую; `rejected`, удалённые, завершившиеся и прошлые заявки не блокируют.
 
 ## Административный режим
 
@@ -100,7 +122,7 @@ Build также генерирует `robots.txt`, `sitemap.xml` и HTML-фай
 
 ```bash
 npm run lint
-npx tsc --noEmit
+npm run typecheck
 npm test
 npm run build
 npm run handover:check

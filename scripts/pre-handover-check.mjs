@@ -17,6 +17,8 @@ const requiredFiles = [
   "package-lock.json",
   "vercel.json",
   "supabase/schema.sql",
+  "supabase/MIGRATION.md",
+  "supabase/migrations/202607220001_booking_duration_and_conflicts.sql",
   "scripts/pre-handover-check.mjs",
 ];
 
@@ -25,6 +27,7 @@ const requiredEnvironmentNames = [
   "SUPABASE_SERVICE_ROLE_KEY",
   "ADMIN_PASSWORD",
   "ADMIN_SESSION_SECRET",
+  "SITE_URL",
 ];
 
 function addPass(message) {

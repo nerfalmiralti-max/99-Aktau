@@ -1,32 +1,38 @@
-import { Armchair, CalendarCheck, DoorOpen, Gamepad2, Gem } from "lucide-react";
+import { Armchair, CalendarCheck, CircleCheck, DoorOpen, Gamepad2 } from "lucide-react";
 
 export const aboutCards = [
   {
-    title: "Спокойная атмосфера вместо шума",
-    text: "Пространство собрано вокруг спокойной атмосферы, мягкого света и ощущения приватного вечера.",
-    icon: Gem,
-  },
-  {
-    title: "Консольный отдых без хаоса",
-    text: "Фокус на удобной посадке, чистой визуальной среде и понятном сценарии визита для гостей.",
+    title: "Два зала на выбор",
+    text: "Основной зал — 1 000 ₸ в час, VIP-зал — 1 500 ₸ в час. У каждого зала своя цена, указанная до бронирования.",
     icon: Gamepad2,
   },
   {
-    title: "Заявка за минуту",
-    text: "Гость выбирает дату и время, оставляет контакт, а владелец получает готовую структуру для подключения CRM.",
+    title: "Заявка онлайн",
+    text: "Укажите зал, дату, время, продолжительность и контактные данные — итоговая стоимость рассчитывается сразу.",
     icon: CalendarCheck,
+  },
+  {
+    title: "Статус бронирования",
+    text: "После отправки заявки её актуальный статус остаётся доступен на сайте.",
+    icon: CircleCheck,
   },
 ];
 
 export const zoneCards = [
   {
     title: "Основной зал",
-    text: "1000 ₸ / час",
+    price: "1 000 ₸",
+    priceUnit: "за час",
+    promotion: "Акция 2+1 — 2 000 ₸ за три часа",
+    bookingRoom: "main",
     icon: Armchair,
   },
   {
     title: "VIP-зал",
-    text: "1500 ₸ / час",
+    price: "1 500 ₸",
+    priceUnit: "за час",
+    promotion: "Акция 2+1 — 3 500 ₸ за три часа",
+    bookingRoom: "vip",
     icon: DoorOpen,
   },
 ];
